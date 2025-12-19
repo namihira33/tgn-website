@@ -2,12 +2,14 @@
 import SectionHeader from '../ui/SectionHeader.astro';
 import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
-import { getUnifiedNews, formatDate } from '../../lib/news';
+import { getUnifiedNews, formatDate, type CategoryType } from '../../lib/news';
 
 const allNews = await getUnifiedNews();
 const latestNews = allNews.slice(0, 3);
 
-function getCategoryLabel(category: string) {
+const defaultImage = '/images/logo.jpg';
+
+function getCategoryLabel(category: CategoryType) {
   switch (category) {
     case 'event': return 'イベント';
     case 'note': return 'note';
@@ -15,8 +17,12 @@ function getCategoryLabel(category: string) {
   }
 }
 
-function getCategoryVariant(category: string): 'primary' | 'secondary' {
-  return category === 'event' ? 'secondary' : 'primary';
+function getCategoryClass(category: CategoryType) {
+  switch (category) {
+    case 'note': return 'badge-note';
+    case 'event': return 'badge-event';
+    default: return 'badge-info';
+  }
 }
 ---
 
@@ -30,33 +36,38 @@ function getCategoryVariant(category: string): 'primary' | 'secondary' {
           href={news.href}
           target={news.isExternal ? '_blank' : undefined}
           rel={news.isExternal ? 'noopener noreferrer' : undefined}
-          class="card group fade-in"
+          class="card group fade-in overflow-hidden"
           style={`transition-delay: ${index * 100}ms`}
         >
-          <div class="p-6">
-            <div class="flex items-center gap-2 mb-3">
-              <span class={news.category === 'note' ? 'badge-note' : ''}>
-                <Badge variant={getCategoryVariant(news.category)}>
-                  {getCategoryLabel(news.category)}
-                </Badge>
-              </span>
-              {news.isExternal && (
-                <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="aspect-video relative overflow-hidden bg-gray-100">
+            <img
+              src={news.image || defaultImage}
+              alt=""
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+            {news.isExternal && (
+              <div class="absolute top-2 right-2 bg-black/50 text-white p-1 rounded">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
-              )}
-              <time class="text-sm text-text-muted">
+              </div>
+            )}
+          </div>
+          <div class="p-4">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              {news.categories.map((cat) => (
+                <span class={`badge-tag ${getCategoryClass(cat)}`}>
+                  {getCategoryLabel(cat)}
+                </span>
+              ))}
+              <time class="text-xs text-text-muted">
                 {formatDate(news.date)}
               </time>
             </div>
-            <h3 class="font-bold text-lg text-text group-hover:text-primary transition-colors line-clamp-2">
+            <h3 class="font-bold text-text group-hover:text-primary transition-colors line-clamp-2">
               {news.title}
             </h3>
-            {news.description && (
-              <p class="mt-2 text-sm text-text-muted line-clamp-2">
-                {news.description}
-              </p>
-            )}
           </div>
         </a>
       ))}
@@ -78,8 +89,26 @@ function getCategoryVariant(category: string): 'primary' | 'secondary' {
     overflow: hidden;
   }
 
-  .badge-note :global(.badge) {
-    background-color: #41C9B4 !important;
-    color: white !important;
+  .badge-tag {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+  }
+
+  .badge-note {
+    background-color: #41C9B4;
+    color: white;
+  }
+
+  .badge-event {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+
+  .badge-info {
+    background-color: var(--color-primary);
+    color: white;
   }
 </style>

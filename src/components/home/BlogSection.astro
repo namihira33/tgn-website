@@ -1,0 +1,100 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeader from '../ui/SectionHeader.astro';
+import Button from '../ui/Button.astro';
+
+const allBlog = await getCollection('blog');
+const latestBlog = allBlog
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
+const defaultImage = '/images/logo.jpg';
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+}
+
+function getCategoryLabel(category: string) {
+  return category === 'report' ? 'レポート' : 'コラム';
+}
+---
+
+<section class="section bg-gray-50">
+  <div class="container">
+    <SectionHeader title="ブログ" subtitle="活動レポート・コラム" />
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+      {latestBlog.map((post, index) => (
+        <a
+          href={`/blog/${post.id}`}
+          class="card group fade-in overflow-hidden"
+          style={`transition-delay: ${index * 100}ms`}
+        >
+          <div class="aspect-video relative overflow-hidden bg-gray-100">
+            <img
+              src={post.data.image || defaultImage}
+              alt=""
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-4">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span class={`badge-tag ${post.data.category === 'report' ? 'badge-report' : 'badge-column'}`}>
+                {getCategoryLabel(post.data.category)}
+              </span>
+              <time class="text-xs text-text-muted">
+                {formatDate(new Date(post.data.date))}
+              </time>
+            </div>
+            <h3 class="font-bold text-text group-hover:text-primary transition-colors line-clamp-2">
+              {post.data.title}
+            </h3>
+            {post.data.author && (
+              <p class="mt-2 text-xs text-text-muted">
+                by {post.data.author}
+              </p>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="text-center">
+      <Button href="/blog" variant="outline">
+        すべてのブログを見る
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .badge-tag {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+  }
+
+  .badge-report {
+    background-color: #6366F1;
+    color: white;
+  }
+
+  .badge-column {
+    background-color: #8B5CF6;
+    color: white;
+  }
+</style>
