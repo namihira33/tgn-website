@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import Button from '../../components/ui/Button.astro';
+
+const benefits = [
+  {
+    title: '次世代研究者へのアクセス',
+    description: '筑波大学を中心とした多様な分野の大学院生・研究者コミュニティに直接リーチできます。',
+    icon: '🎓'
+  },
+  {
+    title: 'ブランド認知向上',
+    description: 'イベント・ウェブサイト・SNSでの露出を通じて、学術コミュニティでの認知度を高められます。',
+    icon: '📢'
+  },
+  {
+    title: '採用・リクルーティング',
+    description: '優秀な大学院生との接点を持ち、将来の人材確保につなげられます。',
+    icon: '🤝'
+  },
+  {
+    title: '共同プロジェクト',
+    description: '異分野交流イベントへの協賛や共同企画を通じて、オープンイノベーションを推進できます。',
+    icon: '💡'
+  }
+];
+
+const challenges = [
+  {
+    title: '継続性の課題',
+    description: '大学院生は2〜5年で卒業するため、団体の継続運営が常に課題です。知識・経験の継承、新メンバーの獲得に継続的な努力が必要です。'
+  },
+  {
+    title: '資金調達の難しさ',
+    description: '学生団体として活動資金の確保は常に悩みの種です。イベント開催、広報活動、運営基盤の維持にはコストがかかります。'
+  },
+  {
+    title: '認知度向上',
+    description: '異分野交流の価値を広く伝え、参加者を集めることは容易ではありません。継続的な広報・マーケティング活動が必要です。'
+  }
+];
+
+const collaborations = [
+  {
+    title: 'イベント協賛',
+    description: '「院生ひろば」「院生の虎」などのイベントへの協賛。会場提供、懇親会スポンサー、景品提供など。',
+    examples: ['院生の虎 審査員参加', '懇親会スポンサー', 'イベント会場提供']
+  },
+  {
+    title: 'メディア露出',
+    description: 'ウェブサイト、SNS、イベント資料での企業ロゴ掲載、紹介記事の掲載。',
+    examples: ['ウェブサイトロゴ掲載', 'SNS紹介投稿', 'イベント資料への掲載']
+  },
+  {
+    title: '共同プログラム',
+    description: '企業と学生が協働するワークショップ、研究相談会、キャリアイベントなど。',
+    examples: ['業界研究セミナー', '研究者向けワークショップ', 'キャリア相談会']
+  }
+];
+---
+
+<BaseLayout title="スポンサー募集" description="つくば院生ネットワーク（TGN）では、活動を支援していただけるスポンサー企業・団体を募集しています。">
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-secondary/10 to-secondary-light/20 py-16 md:py-24">
+    <div class="container">
+      <h1 class="text-3xl md:text-4xl font-bold text-text mb-6">
+        スポンサー・パートナー募集
+      </h1>
+      <p class="text-lg text-text-muted max-w-2xl">
+        TGNでは、大学院生コミュニティの発展を一緒に支えていただける
+        スポンサー企業・団体様を募集しています。
+      </p>
+    </div>
+  </section>
+
+  <!-- Why Support -->
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        title="なぜ大学院生コミュニティを支援するのか"
+        subtitle="大学院生は次世代のイノベーションを担う人材です"
+      />
+
+      <div class="prose prose-lg max-w-3xl mb-12">
+        <p>
+          筑波研究学園都市は、日本を代表する研究機関が集積する「知の拠点」です。
+          ここで学ぶ大学院生たちは、将来の研究者、起業家、企業の技術リーダーとなる人材です。
+        </p>
+        <p>
+          しかし、大学院生活は研究室に閉じがちで、異分野との交流や社会との接点が限られています。
+          TGNは2011年の設立以来、この課題に取り組み、大学院生同士がつながり、
+          刺激し合える場を作ってきました。
+        </p>
+        <p>
+          <strong>私たちの活動を支援することは、次世代の研究者・イノベーターへの投資です。</strong>
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {benefits.map((benefit, index) => (
+          <div class="card p-6 text-center fade-in" style={`transition-delay: ${index * 100}ms`}>
+            <div class="text-4xl mb-4">{benefit.icon}</div>
+            <h3 class="font-bold text-lg mb-2">{benefit.title}</h3>
+            <p class="text-sm text-text-muted">{benefit.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Challenges -->
+  <section class="section bg-gray-50">
+    <div class="container">
+      <SectionHeader
+        title="大学院生コミュニティ運営の課題"
+        subtitle="ご支援が必要な理由"
+      />
+
+      <div class="grid md:grid-cols-3 gap-8">
+        {challenges.map((challenge, index) => (
+          <div class="bg-surface p-6 rounded-lg border-l-4 border-secondary fade-in" style={`transition-delay: ${index * 100}ms`}>
+            <h3 class="font-bold text-lg mb-3 text-text">{challenge.title}</h3>
+            <p class="text-text-muted">{challenge.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-12 p-8 bg-primary/5 rounded-2xl">
+        <h3 class="text-xl font-bold text-primary mb-4">TGNの実績</h3>
+        <ul class="grid md:grid-cols-2 gap-4 text-text-muted">
+          <li class="flex items-start gap-2">
+            <span class="text-primary font-bold">2011年〜</span>
+            <span>設立から10年以上の活動継続</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary font-bold">85万円+</span>
+            <span>「みんなの学会」クラウドファンディング達成</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary font-bold">複数回</span>
+            <span>副学長特別表彰・優秀賞受賞</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary font-bold">査読論文</span>
+            <span>活動が学術論文として発表</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Collaboration Options -->
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        title="コラボレーションの形"
+        subtitle="様々な形でのパートナーシップが可能です"
+      />
+
+      <div class="grid md:grid-cols-3 gap-8">
+        {collaborations.map((collab, index) => (
+          <div class="card p-6 fade-in" style={`transition-delay: ${index * 100}ms`}>
+            <h3 class="font-bold text-xl mb-3 text-primary">{collab.title}</h3>
+            <p class="text-text-muted mb-4">{collab.description}</p>
+            <div class="space-y-2">
+              <p class="text-sm font-semibold text-text">例：</p>
+              <ul class="space-y-1">
+                {collab.examples.map(example => (
+                  <li class="text-sm text-text-muted flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                    {example}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section bg-gradient-to-r from-secondary to-orange-500 text-white">
+    <div class="container text-center">
+      <h2 class="text-2xl md:text-3xl font-bold mb-6">
+        一緒に次世代を育てませんか？
+      </h2>
+      <p class="text-orange-100 text-lg mb-8 max-w-2xl mx-auto">
+        スポンサーシップの詳細、カスタムプランのご相談など、
+        お気軽にお問い合わせください。
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <Button
+          href="mailto:tsukuba.graduate@gmail.com?subject=スポンサーシップについて"
+          variant="primary"
+          size="lg"
+          class="bg-white text-secondary hover:bg-gray-100"
+        >
+          お問い合わせ
+        </Button>
+        <a
+          href="/about"
+          class="btn btn-outline border-white text-white hover:bg-white hover:text-secondary py-3 px-8 text-lg"
+        >
+          TGNについて詳しく
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

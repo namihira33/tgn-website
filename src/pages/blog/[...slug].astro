@@ -1,0 +1,74 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+
+export async function getStaticPaths() {
+  const blog = await getCollection('blog');
+  return blog.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+
+const getCategoryLabel = (category: string) => {
+  const labels: Record<string, string> = {
+    report: '活動報告',
+    column: 'コラム'
+  };
+  return labels[category] || category;
+};
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <article class="section">
+    <div class="container max-w-3xl">
+      <!-- Header -->
+      <header class="mb-8">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <Badge variant={entry.data.category === 'column' ? 'secondary' : 'primary'}>
+            {getCategoryLabel(entry.data.category)}
+          </Badge>
+          <time class="text-text-muted">
+            {formatDate(new Date(entry.data.date))}
+          </time>
+          {entry.data.author && (
+            <span class="text-text-muted">
+              by {entry.data.author}
+            </span>
+          )}
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-text">
+          {entry.data.title}
+        </h1>
+      </header>
+
+      <!-- Content -->
+      <div class="prose prose-lg max-w-none">
+        <Content />
+      </div>
+
+      <!-- Back button -->
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <Button href="/blog" variant="outline">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          ブログ一覧に戻る
+        </Button>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

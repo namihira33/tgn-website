@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import Badge from '../../components/ui/Badge.astro';
+
+const allNews = await getCollection('news');
+const sortedNews = allNews.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+---
+
+<BaseLayout title="NEWS" description="つくば院生ネットワーク（TGN）の最新ニュース・イベント情報">
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        title="NEWS"
+        subtitle="最新のお知らせ・イベント情報"
+      />
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {sortedNews.map((news, index) => (
+          <a
+            href={`/news/${news.id}`}
+            class="card group fade-in"
+            style={`transition-delay: ${index * 50}ms`}
+          >
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-3">
+                <Badge variant={news.data.category === 'event' ? 'secondary' : 'primary'}>
+                  {news.data.category === 'event' ? 'イベント' : 'お知らせ'}
+                </Badge>
+                <time class="text-sm text-text-muted">
+                  {formatDate(new Date(news.data.date))}
+                </time>
+              </div>
+              <h2 class="font-bold text-lg text-text group-hover:text-primary transition-colors line-clamp-2">
+                {news.data.title}
+              </h2>
+              {news.data.description && (
+                <p class="mt-2 text-sm text-text-muted line-clamp-3">
+                  {news.data.description}
+                </p>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

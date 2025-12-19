@@ -1,0 +1,105 @@
+---
+const navItems = [
+  { href: '/', label: 'ホーム' },
+  { href: '/news', label: 'NEWS' },
+  { href: '/blog', label: 'ブログ' },
+  { href: '/about', label: 'TGNについて' },
+  { href: '/sponsor', label: 'スポンサー' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-sm border-b border-gray-100">
+  <div class="container">
+    <nav class="flex items-center justify-between h-16 md:h-20">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 text-primary font-bold text-xl hover:opacity-80 transition-opacity">
+        <span class="text-2xl">TGN</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <ul class="hidden md:flex items-center gap-8">
+        {navItems.map(item => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'relative py-2 text-sm font-medium transition-colors',
+                currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                  ? 'text-primary'
+                  : 'text-text-muted hover:text-text'
+              ]}
+            >
+              {item.label}
+              {(currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))) && (
+                <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/about#join" class="btn btn-primary text-sm py-2 px-4">
+            参加する
+          </a>
+        </li>
+      </ul>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-btn"
+        class="md:hidden p-2 text-text-muted hover:text-text transition-colors"
+        aria-label="メニューを開く"
+        aria-expanded="false"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path class="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <path class="close-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-surface">
+    <div class="container py-4">
+      <ul class="flex flex-col gap-4">
+        {navItems.map(item => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'block py-2 text-base font-medium transition-colors',
+                currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                  ? 'text-primary'
+                  : 'text-text-muted hover:text-text'
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+        <li class="pt-2">
+          <a href="/about#join" class="btn btn-primary w-full text-center">
+            参加する
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.querySelector('.menu-icon');
+  const closeIcon = document.querySelector('.close-icon');
+
+  menuBtn?.addEventListener('click', () => {
+    const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
+    menuBtn.setAttribute('aria-expanded', String(!isExpanded));
+    mobileMenu?.classList.toggle('hidden');
+    menuIcon?.classList.toggle('hidden');
+    closeIcon?.classList.toggle('hidden');
+  });
+</script>

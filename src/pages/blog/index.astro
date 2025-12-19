@@ -1,0 +1,82 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import Badge from '../../components/ui/Badge.astro';
+
+const allBlog = await getCollection('blog');
+const sortedBlog = allBlog.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+
+const getCategoryLabel = (category: string) => {
+  const labels: Record<string, string> = {
+    report: '活動報告',
+    column: 'コラム'
+  };
+  return labels[category] || category;
+};
+---
+
+<BaseLayout title="ブログ" description="つくば院生ネットワーク（TGN）の活動報告・コラム">
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        title="ブログ"
+        subtitle="活動報告・コラム"
+      />
+
+      <div class="grid gap-8">
+        {sortedBlog.map((post, index) => (
+          <a
+            href={`/blog/${post.id}`}
+            class="card group fade-in"
+            style={`transition-delay: ${index * 50}ms`}
+          >
+            <div class="p-6 md:p-8">
+              <div class="flex flex-wrap items-center gap-3 mb-4">
+                <Badge variant={post.data.category === 'column' ? 'secondary' : 'primary'}>
+                  {getCategoryLabel(post.data.category)}
+                </Badge>
+                <time class="text-sm text-text-muted">
+                  {formatDate(new Date(post.data.date))}
+                </time>
+              </div>
+              <h2 class="font-bold text-xl md:text-2xl text-text group-hover:text-primary transition-colors mb-3">
+                {post.data.title}
+              </h2>
+              {post.data.description && (
+                <p class="text-text-muted line-clamp-3">
+                  {post.data.description}
+                </p>
+              )}
+              <div class="mt-4 text-primary font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                続きを読む
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

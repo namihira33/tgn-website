@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeader from '../ui/SectionHeader.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+
+const allNews = await getCollection('news');
+const latestNews = allNews
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+---
+
+<section class="section bg-background">
+  <div class="container">
+    <SectionHeader title="NEWS" subtitle="最新のお知らせ・イベント情報" />
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+      {latestNews.map((news, index) => (
+        <a
+          href={`/news/${news.slug}`}
+          class="card group fade-in"
+          style={`transition-delay: ${index * 100}ms`}
+        >
+          <div class="p-6">
+            <div class="flex items-center gap-2 mb-3">
+              <Badge variant={news.data.category === 'event' ? 'secondary' : 'primary'}>
+                {news.data.category === 'event' ? 'イベント' : 'お知らせ'}
+              </Badge>
+              <time class="text-sm text-text-muted">
+                {formatDate(new Date(news.data.date))}
+              </time>
+            </div>
+            <h3 class="font-bold text-lg text-text group-hover:text-primary transition-colors line-clamp-2">
+              {news.data.title}
+            </h3>
+            {news.data.description && (
+              <p class="mt-2 text-sm text-text-muted line-clamp-2">
+                {news.data.description}
+              </p>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="text-center">
+      <Button href="/news" variant="outline">
+        すべてのNEWSを見る
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

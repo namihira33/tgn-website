@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+
+export async function getStaticPaths() {
+  const news = await getCollection('news');
+  return news.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <article class="section">
+    <div class="container max-w-3xl">
+      <!-- Header -->
+      <header class="mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <Badge variant={entry.data.category === 'event' ? 'secondary' : 'primary'}>
+            {entry.data.category === 'event' ? 'イベント' : 'お知らせ'}
+          </Badge>
+          <time class="text-text-muted">
+            {formatDate(new Date(entry.data.date))}
+          </time>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-text">
+          {entry.data.title}
+        </h1>
+      </header>
+
+      <!-- Content -->
+      <div class="prose prose-lg max-w-none">
+        <Content />
+      </div>
+
+      <!-- Back button -->
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <Button href="/news" variant="outline">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          NEWS一覧に戻る
+        </Button>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

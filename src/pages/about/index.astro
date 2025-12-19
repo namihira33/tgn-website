@@ -1,0 +1,237 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import Button from '../../components/ui/Button.astro';
+
+const achievements = [
+  {
+    year: '2020',
+    title: 'KEKサイエンスカフェ出演',
+    description: 'TGNメンバーがゲストスピーカーとして話題提供'
+  },
+  {
+    year: '2019',
+    title: 'JASC年会ベストプレゼンテーション賞',
+    description: '日本サイエンスコミュニケーション協会で受賞'
+  },
+  {
+    year: '2017',
+    title: '論文掲載「大学図書館研究」',
+    description: 'ザ・プレゼンテーションの事例報告が査読付き論文として掲載'
+  },
+  {
+    year: '2016',
+    title: '副学長優秀賞（駅前キャンパス）',
+    description: 'つくばアクションプロジェクトで受賞'
+  },
+  {
+    year: '2014',
+    title: '論文掲載「科学技術コミュニケーション」',
+    description: 'プレゼンひろばの事例報告が査読付き報告として掲載'
+  },
+  {
+    year: '2012',
+    title: '論文掲載「科学技術コミュニケーション」',
+    description: '院生プレゼンバトルの事例報告が査読付き報告として掲載'
+  },
+  {
+    year: '2011',
+    title: 'TGN設立',
+    description: '学長懇談会をきっかけに大学院生15名で発足'
+  },
+];
+---
+
+<BaseLayout title="TGNについて" description="つくば院生ネットワーク（TGN）のミッション、活動内容、沿革、参加方法について">
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-primary/5 to-primary-light/10 py-16 md:py-24">
+    <div class="container">
+      <h1 class="text-3xl md:text-4xl font-bold text-text mb-6">
+        TGNについて
+      </h1>
+      <p class="text-lg text-text-muted max-w-2xl">
+        つくば院生ネットワーク（TGN: Tsukuba Graduate students' Network）は、
+        筑波大学の大学院生による異分野交流・科学コミュニケーション団体です。
+      </p>
+    </div>
+  </section>
+
+  <!-- Mission -->
+  <section class="section" id="mission">
+    <div class="container">
+      <SectionHeader title="ミッション" />
+
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-6">
+          <div class="prose prose-lg">
+            <h3 class="text-xl font-bold text-primary">ビジョン</h3>
+            <p>
+              我々は科学技術立国の要である筑波研究学園都市および筑波大学を中心とし、
+              豊かな世の中を実現することを目的に、<strong>学術的な交流をするインフラ</strong>をつくる活動を行っています。
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold text-primary">ミッション</h3>
+            <ol class="space-y-3 text-text-muted">
+              <li class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                <span>筑波研究学園都市を通して、世界中の叡智を集積し、次世代科学・技術を追求・世界中へ発信する。</span>
+              </li>
+              <li class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                <span>筑波研究学園都市の学術交流を推進し、学術的な風土を強固なものにする。</span>
+              </li>
+              <li class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                <span>学際的な次世代科学・技術を追求し、世界的に発信する活力ある人材を育成する。</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-2xl p-8 shadow-lg">
+          <blockquote class="text-lg text-text italic border-l-4 border-primary pl-4">
+            「今我々が抱えている問題は、誰かに解決を訴えるものではなく自分たちで解決していくべきもの」
+          </blockquote>
+          <p class="mt-4 text-text-muted text-sm">
+            — 2010年 学長懇談会での共通見解、TGN設立の原点
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Activities -->
+  <section class="section bg-gray-50" id="activities">
+    <div class="container">
+      <SectionHeader title="活動内容" />
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="card p-6 md:p-8">
+          <div class="text-3xl mb-4">🔬</div>
+          <h3 class="text-xl font-bold mb-3">異分野コミュニケーション</h3>
+          <p class="text-text-muted mb-4">
+            「せっかくの総合大学。異分野に触れなきゃもったいない！」様々な分野の学問がひとつのキャンパスに集まった筑波大学。
+            その学際性を活かして、異分野の学問に触れる機会を増やす活動を行っています。
+          </p>
+          <ul class="space-y-2 text-sm text-text-muted">
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span><strong>院生の虎</strong>：研究プレゼン＆審査員からのフィードバック</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span><strong>院生ひろば</strong>：テーマ別グループディスカッション</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span><strong>プレゼンひろば</strong>：図書館での日常的な異分野交流</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card p-6 md:p-8">
+          <div class="text-3xl mb-4">🌐</div>
+          <h3 class="text-xl font-bold mb-3">科学コミュニケーション</h3>
+          <p class="text-text-muted mb-4">
+            「学問は大学だけのものじゃない！」学問は大学だけで閉じているのではなく、社会に還元されるべきもの。
+            大学内の学生・教員と一般市民の橋渡しとなる活動を行っています。
+          </p>
+          <ul class="space-y-2 text-sm text-text-muted">
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span><strong>ザ・プレゼンテーション</strong>：異分野向け研究プレゼン技術を学ぶ大学院共通科目</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span><strong>駅前キャンパス</strong>：つくば駅前での研究成果発信</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span><strong>学生プレゼンバトル</strong>：雙峰祭での学問プレゼンNO.1決定戦</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="section" id="history">
+    <div class="container">
+      <SectionHeader title="沿革・実績" />
+
+      <div class="relative">
+        <!-- Timeline line -->
+        <div class="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-primary/20 transform md:-translate-x-1/2"></div>
+
+        <div class="space-y-8">
+          {achievements.map((item, index) => (
+            <div class:list={[
+              'relative flex items-start gap-6 md:gap-8',
+              index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+            ]}>
+              <!-- Year bubble -->
+              <div class="flex-shrink-0 w-20 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm z-10">
+                {item.year}
+              </div>
+
+              <!-- Content card -->
+              <div class:list={[
+                'flex-1 card p-4 md:p-6 fade-in',
+                index % 2 === 0 ? 'md:mr-auto md:max-w-md' : 'md:ml-auto md:max-w-md'
+              ]}
+              style={`transition-delay: ${index * 100}ms`}>
+                <h3 class="font-bold text-text mb-1">{item.title}</h3>
+                <p class="text-sm text-text-muted">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join -->
+  <section class="section bg-gradient-to-r from-primary to-primary-dark text-white" id="join">
+    <div class="container">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">
+          参加方法
+        </h2>
+        <p class="text-primary-light text-lg mb-4">
+          TGNでは、能動的に活動に携わっていただける仲間を募集しています。
+        </p>
+        <p class="text-primary-light mb-8">
+          TGNメンバーは、学群1年生から博士後期課程3年生まで幅広く、所属・専門分野も多岐に渡っています。
+          筑波大生でなくても、つくば付近に所属があれば参加OK！<br /><br />
+          試しにミーティングに参加してみませんか？<br />
+          研究やサークル等で忙しい時期は、活動に参加できなくても構いません。<br />
+          TGNは、みなさんの時間を尊重します。
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4">
+          <Button
+            href="mailto:tsukuba.graduate@gmail.com"
+            variant="secondary"
+            size="lg"
+          >
+            メールで問い合わせ
+          </Button>
+          <a
+            href="https://x.com/TGN_Account"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline border-white text-white hover:bg-white hover:text-primary py-3 px-8 text-lg"
+          >
+            X (Twitter)
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

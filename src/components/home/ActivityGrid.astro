@@ -1,0 +1,49 @@
+---
+import SectionHeader from '../ui/SectionHeader.astro';
+
+const activities = [
+  {
+    title: '院生ひろば',
+    description: '研究室の外で同じ大学院生として悩みや経験を共有できる場。テーマ別のグループディスカッションを通じて意味のあるつながりを作ります。',
+    icon: '💬'
+  },
+  {
+    title: '院生の虎',
+    description: '自分の研究を3人の審査員にプレゼンし、異分野の視点からフィードバックを受ける企画。真剣な異分野コミュニケーションの場を創出します。',
+    icon: '🎤'
+  },
+  {
+    title: '異分野交流',
+    description: '様々な分野の学問がひとつのキャンパスに集まった筑波大学。その学際性を活かした交流イベントを開催しています。',
+    icon: '🔬'
+  },
+  {
+    title: '科学コミュニケーション',
+    description: '学問は社会に還元されるべきもの。大学内の学生・教員と一般市民の橋渡しとなる活動を行っています。',
+    icon: '🌐'
+  }
+];
+---
+
+<section class="section bg-surface">
+  <div class="container">
+    <SectionHeader
+      title="活動紹介"
+      subtitle="TGNの主な活動"
+      align="center"
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {activities.map((activity, index) => (
+        <div
+          class="card p-6 text-center fade-in"
+          style={`transition-delay: ${index * 100}ms`}
+        >
+          <div class="text-4xl mb-4">{activity.icon}</div>
+          <h3 class="font-bold text-lg mb-2">{activity.title}</h3>
+          <p class="text-sm text-text-muted">{activity.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
