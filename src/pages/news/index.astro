@@ -1,21 +1,22 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeader from '../../components/ui/SectionHeader.astro';
 import Badge from '../../components/ui/Badge.astro';
+import { getUnifiedNews, formatDate } from '../../lib/news';
 
-const allNews = await getCollection('news');
-const sortedNews = allNews.sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
+const allNews = await getUnifiedNews();
 
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }).format(date);
-};
+function getCategoryLabel(category: string) {
+  switch (category) {
+    case 'event': return 'イベント';
+    case 'note': return 'note';
+    default: return 'お知らせ';
+  }
+}
+
+function getCategoryVariant(category: string): 'primary' | 'secondary' {
+  return category === 'event' ? 'secondary' : 'primary';
+}
 ---
 
 <BaseLayout title="NEWS" description="つくば院生ネットワーク（TGN）の最新ニュース・イベント情報">
@@ -23,31 +24,40 @@ const formatDate = (date: Date) => {
     <div class="container">
       <SectionHeader
         title="NEWS"
-        subtitle="最新のお知らせ・イベント情報"
+        subtitle="最新のお知らせ・イベント情報（note記事を含む）"
       />
 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {sortedNews.map((news, index) => (
+        {allNews.map((news, index) => (
           <a
-            href={`/news/${news.id}`}
+            href={news.href}
+            target={news.isExternal ? '_blank' : undefined}
+            rel={news.isExternal ? 'noopener noreferrer' : undefined}
             class="card group fade-in"
-            style={`transition-delay: ${index * 50}ms`}
+            style={`transition-delay: ${Math.min(index, 10) * 50}ms`}
           >
             <div class="p-6">
               <div class="flex items-center gap-2 mb-3">
-                <Badge variant={news.data.category === 'event' ? 'secondary' : 'primary'}>
-                  {news.data.category === 'event' ? 'イベント' : 'お知らせ'}
-                </Badge>
+                <span class={`badge ${news.category === 'note' ? 'badge-note' : ''}`}>
+                  <Badge variant={getCategoryVariant(news.category)}>
+                    {getCategoryLabel(news.category)}
+                  </Badge>
+                </span>
+                {news.isExternal && (
+                  <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                )}
                 <time class="text-sm text-text-muted">
-                  {formatDate(new Date(news.data.date))}
+                  {formatDate(news.date)}
                 </time>
               </div>
               <h2 class="font-bold text-lg text-text group-hover:text-primary transition-colors line-clamp-2">
-                {news.data.title}
+                {news.title}
               </h2>
-              {news.data.description && (
+              {news.description && (
                 <p class="mt-2 text-sm text-text-muted line-clamp-3">
-                  {news.data.description}
+                  {news.description}
                 </p>
               )}
             </div>
@@ -71,5 +81,10 @@ const formatDate = (date: Date) => {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .badge-note :global(.badge) {
+    background-color: #41C9B4 !important;
+    color: white !important;
   }
 </style>
