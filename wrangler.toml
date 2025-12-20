@@ -6,8 +6,13 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "tgn-posts"
-database_id = "placeholder"  # Cloudflareダッシュボードで作成後に更新
+database_id = "f87470fd-1c49-4b26-b9b2-ec5dff10981e"
+
+# R2 Storage（画像アップロード用）
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "tgn-uploads"
 
 # 環境変数
 [vars]
-ADMIN_PASSWORD = "TGN201512201"
+ADMIN_PASSWORD = "TGN20251220"
