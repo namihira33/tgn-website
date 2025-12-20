@@ -142,6 +142,7 @@ function getCategoryClass(category: CategoryType) {
         const card = document.createElement('a');
         card.href = '/news/admin/' + post.id;
         card.className = 'card group fade-in overflow-hidden news-card';
+        card.style.display = 'block';
         card.setAttribute('data-date', post.created_at);
 
         const cardHtml = `
