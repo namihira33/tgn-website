@@ -331,12 +331,18 @@
             <input type="text" id="post-title" class="form-input" required />
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="post-category">カテゴリ</label>
-            <select id="post-category" class="form-select">
-              <option value="info">お知らせ</option>
-              <option value="event">イベント</option>
-            </select>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="post-category">カテゴリ</label>
+              <select id="post-category" class="form-select">
+                <option value="info">お知らせ</option>
+                <option value="event">イベント</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="post-date">公開日</label>
+              <input type="date" id="post-date" class="form-input" />
+            </div>
           </div>
 
           <div class="form-group">
@@ -478,6 +484,7 @@
       document.getElementById('post-title').value = '';
       document.getElementById('post-content').value = '';
       document.getElementById('post-category').value = 'info';
+      document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
       document.getElementById('post-image').value = '';
       document.getElementById('image-upload').value = '';
       document.getElementById('upload-status').textContent = '';
@@ -497,6 +504,9 @@
       document.getElementById('post-title').value = post.title;
       document.getElementById('post-content').value = post.content;
       document.getElementById('post-category').value = post.category;
+      // 日付を設定（published_atがあればそれを、なければcreated_atを使用）
+      const postDate = post.published_at || post.created_at;
+      document.getElementById('post-date').value = postDate ? postDate.split('T')[0] : new Date().toISOString().split('T')[0];
       document.getElementById('post-image').value = post.image_url || '';
       document.getElementById('image-upload').value = '';
       document.getElementById('upload-status').textContent = '';
@@ -557,7 +567,8 @@
         title: document.getElementById('post-title').value,
         content: document.getElementById('post-content').value,
         category: document.getElementById('post-category').value,
-        image_url: document.getElementById('post-image').value || null
+        image_url: document.getElementById('post-image').value || null,
+        published_at: document.getElementById('post-date').value || null
       };
 
       try {

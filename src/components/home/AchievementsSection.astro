@@ -3,9 +3,9 @@ import Button from '../ui/Button.astro';
 
 const stats = [
   { label: 'メンバー数', value: '約30名' },
-  { label: '開催イベント', value: '10+' },
-  { label: 'note記事', value: '20+' },
-  { label: '活動年数', value: '10年+' },
+  { label: '開催イベント', value: '100+' },
+  { label: '活動年数', value: '13年+' },
+  { label: 'メディア掲載', value: '6件' },
 ];
 
 const highlights = [
@@ -23,8 +23,8 @@ const highlights = [
           活動実績・成果
         </h2>
         <p class="text-text-muted mb-6">
-          TGNは2015年の設立以来、異分野交流イベントや科学コミュニケーション活動を通じて、
-          大学院生同士のネットワーク構築に取り組んできました。
+          TGNは2011年の設立以来、院生プレゼンバトルをはじめとする異分野交流イベントや
+          科学コミュニケーション活動を通じて、大学院生同士のネットワーク構築に取り組んできました。
         </p>
 
         <div class="grid grid-cols-2 gap-4 mb-6">
@@ -36,9 +36,23 @@ const highlights = [
           ))}
         </div>
 
-        <Button href="/achievements" variant="outline">
-          業績を詳しく見る
-        </Button>
+        <div class="flex flex-wrap gap-3">
+          <Button href="/achievements" variant="outline">
+            業績を詳しく見る
+          </Button>
+          <a href="/achievements/archive" class="inline-flex items-center gap-2 px-4 py-2 text-sm text-primary hover:text-primary-dark font-medium border border-primary/20 rounded-lg hover:border-primary/40 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            過去記事
+          </a>
+          <a href="/achievements/media" class="inline-flex items-center gap-2 px-4 py-2 text-sm text-secondary hover:text-secondary-dark font-medium border border-secondary/20 rounded-lg hover:border-secondary/40 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
+            </svg>
+            メディア掲載
+          </a>
+        </div>
       </div>
 
       <div class="space-y-4">

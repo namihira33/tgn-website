@@ -10,6 +10,7 @@ interface Post {
   content: string;
   category: string;
   image_url?: string;
+  published_at?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -49,9 +50,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // 全記事取得
+    // 全記事取得（published_atを優先して日付順に並べる）
     const { results } = await env.DB.prepare(
-      'SELECT * FROM posts ORDER BY created_at DESC'
+      'SELECT * FROM posts ORDER BY COALESCE(published_at, created_at) DESC'
     ).all();
 
     return new Response(JSON.stringify({ posts: results }), {
@@ -87,12 +88,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     const result = await env.DB.prepare(
-      'INSERT INTO posts (title, content, category, image_url) VALUES (?, ?, ?, ?)'
+      'INSERT INTO posts (title, content, category, image_url, published_at) VALUES (?, ?, ?, ?, ?)'
     ).bind(
       post.title,
       post.content,
       post.category || 'info',
-      post.image_url || null
+      post.image_url || null,
+      post.published_at || new Date().toISOString().split('T')[0]
     ).run();
 
     return new Response(JSON.stringify({
@@ -131,12 +133,13 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
     }
 
     await env.DB.prepare(
-      'UPDATE posts SET title = ?, content = ?, category = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+      'UPDATE posts SET title = ?, content = ?, category = ?, image_url = ?, published_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
     ).bind(
       post.title,
       post.content,
       post.category || 'info',
       post.image_url || null,
+      post.published_at || new Date().toISOString().split('T')[0],
       post.id
     ).run();
 

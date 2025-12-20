@@ -1,0 +1,175 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// 過去の活動記録（XMLから抽出した主要な記事）
+const archiveItems = [
+  // 2018年
+  { date: '2018-09-30', title: 'Student Presentation Battle (TGSW2018) 活動報告', category: '院生プレゼンバトル' },
+  { date: '2018-07-19', title: '【第2回7/24】デモプレ開催します！', category: 'イベント' },
+  { date: '2018-06-27', title: '第一回つくばカルチェ・ラタン開催！', category: 'イベント' },
+  { date: '2018-06-25', title: '【活動報告】デモプレ(第１回6/20開催)', category: '活動報告' },
+  { date: '2018-06-12', title: '【第1回6/20】「デモプレ」開催します！', category: 'イベント' },
+  { date: '2018-03-18', title: '"英語版"学生プレゼンバトル開催決定！（TGSW2018）', category: '院生プレゼンバトル' },
+
+  // 2015年
+  { date: '2015-01-22', title: '1月23日のプレゼンひろば', category: 'プレゼンひろば' },
+  { date: '2015-01-20', title: '【ご報告】12月19日のプレゼンひろば', category: 'プレゼンひろば' },
+
+  // 2014年
+  { date: '2014-12-16', title: '12月19日のプレゼンひろば', category: 'プレゼンひろば' },
+  { date: '2014-10-29', title: '11月3日のプレゼンひろば', category: 'プレゼンひろば' },
+  { date: '2014-04-16', title: 'T-ACT表彰式において「プレゼンひろば」が優秀賞を受賞', category: '受賞' },
+  { date: '2014-04-16', title: 'プレゼンひろば 特別週間(4/21~4/25)', category: 'プレゼンひろば' },
+
+  // 2013年
+  { date: '2013-12-05', title: 'プレゼンテーションセミナーのお知らせ', category: 'セミナー' },
+  { date: '2013-11-16', title: '院生プレゼンバトル2013 結果報告', category: '院生プレゼンバトル' },
+  { date: '2013-11-02', title: '雙峰祭グランプリ2013', category: 'イベント' },
+  { date: '2013-10-28', title: '学内研究企画2013パンフレット完成', category: '学研企画' },
+  { date: '2013-10-10', title: '院生プレゼンバトル2013 予選開幕', category: '院生プレゼンバトル' },
+  { date: '2013-08-01', title: '院生プレゼンバトル2013 エントリー受付開始', category: '院生プレゼンバトル' },
+  { date: '2013-05-20', title: '今年もやります！院生プレゼンバトル2013', category: '院生プレゼンバトル' },
+
+  // 2012年
+  { date: '2012-10-10', title: '院生プレゼンバトル2012', category: '院生プレゼンバトル' },
+  { date: '2012-10-08', title: '院生プレゼンバトル2012-結果', category: '院生プレゼンバトル' },
+  { date: '2012-10-04', title: 'D3からみた院生プレゼンバトル', category: 'ブログ' },
+  { date: '2012-09-14', title: '学研企画パンフレット完成！', category: '学研企画' },
+  { date: '2012-07-29', title: '院生プレゼンバトル2012 エントリー開始！', category: '院生プレゼンバトル' },
+  { date: '2012-07-11', title: '大学院生学際研究フォーラム 院生プレゼンバトル2012', category: '院生プレゼンバトル' },
+  { date: '2012-07-11', title: '第一線研究者 教員プレゼンバトル', category: '教員プレゼンバトル' },
+  { date: '2012-07-10', title: 'Monday Morning Institute: MMI –street scientists–', category: 'MMI' },
+  { date: '2012-04-20', title: 'MMI特別週間：MAINICHI Morning Institute', category: 'MMI' },
+
+  // 2011年
+  { date: '2011-11-01', title: '学内研究企画増加プロジェクト', category: '学研企画' },
+  { date: '2011-10-11', title: '院生プレゼンバトル2011', category: '院生プレゼンバトル' },
+];
+
+// 年ごとにグループ化
+const groupedArchive = archiveItems.reduce((acc, item) => {
+  const year = item.date.split('-')[0];
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(item);
+  return acc;
+}, {} as Record<string, typeof archiveItems>);
+
+const years = Object.keys(groupedArchive).sort((a, b) => parseInt(b) - parseInt(a));
+
+// カテゴリカラー
+const categoryColors: Record<string, string> = {
+  '院生プレゼンバトル': 'bg-blue-500',
+  '教員プレゼンバトル': 'bg-purple-500',
+  'プレゼンひろば': 'bg-green-500',
+  'MMI': 'bg-teal-500',
+  '学研企画': 'bg-orange-500',
+  'イベント': 'bg-pink-500',
+  '活動報告': 'bg-cyan-500',
+  'ブログ': 'bg-gray-500',
+  'セミナー': 'bg-indigo-500',
+  '受賞': 'bg-yellow-500',
+};
+---
+
+<BaseLayout title="過去記事アーカイブ" description="つくば院生ネットワーク（TGN）の過去の活動記録">
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-primary to-primary-dark text-white py-16 md:py-24">
+    <div class="container text-center">
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">過去記事アーカイブ</h1>
+      <p class="text-primary-light max-w-2xl mx-auto">
+        2011年の設立以来、TGNが行ってきた活動の記録です
+      </p>
+    </div>
+  </section>
+
+  <!-- Breadcrumb -->
+  <div class="bg-gray-50 py-3">
+    <div class="container">
+      <nav class="text-sm text-text-muted">
+        <a href="/" class="hover:text-primary">ホーム</a>
+        <span class="mx-2">/</span>
+        <a href="/achievements" class="hover:text-primary">業績・成果</a>
+        <span class="mx-2">/</span>
+        <span class="text-text">過去記事アーカイブ</span>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Archive List -->
+  <section class="section">
+    <div class="container">
+      <div class="max-w-4xl mx-auto">
+        {years.map(year => (
+          <div class="mb-12">
+            <h2 class="text-2xl font-bold text-text mb-6 pb-2 border-b-2 border-primary flex items-center gap-3">
+              <span class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-lg">
+                {year.slice(2)}
+              </span>
+              {year}年
+            </h2>
+            <div class="grid gap-3">
+              {groupedArchive[year].map(item => (
+                <div class="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
+                  <time class="flex-shrink-0 text-sm text-text-muted w-24">
+                    {item.date.replace(/-/g, '/')}
+                  </time>
+                  <span class={`flex-shrink-0 px-2 py-0.5 text-xs text-white rounded ${categoryColors[item.category] || 'bg-gray-500'}`}>
+                    {item.category}
+                  </span>
+                  <h3 class="font-medium text-text flex-1">{item.title}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Summary -->
+  <section class="section bg-gray-50">
+    <div class="container">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-2xl font-bold text-text mb-6">主な活動カテゴリ</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="p-4 bg-white rounded-lg">
+            <div class="text-3xl font-bold text-blue-500 mb-1">GPB</div>
+            <div class="text-sm text-text-muted">院生プレゼンバトル</div>
+          </div>
+          <div class="p-4 bg-white rounded-lg">
+            <div class="text-3xl font-bold text-purple-500 mb-1">FPB</div>
+            <div class="text-sm text-text-muted">教員プレゼンバトル</div>
+          </div>
+          <div class="p-4 bg-white rounded-lg">
+            <div class="text-3xl font-bold text-teal-500 mb-1">MMI</div>
+            <div class="text-sm text-text-muted">Morning Institute</div>
+          </div>
+          <div class="p-4 bg-white rounded-lg">
+            <div class="text-3xl font-bold text-green-500 mb-1">PH</div>
+            <div class="text-sm text-text-muted">プレゼンひろば</div>
+          </div>
+          <div class="p-4 bg-white rounded-lg">
+            <div class="text-3xl font-bold text-orange-500 mb-1">学研</div>
+            <div class="text-sm text-text-muted">学研企画強化</div>
+          </div>
+          <div class="p-4 bg-white rounded-lg">
+            <div class="text-3xl font-bold text-pink-500 mb-1">EV</div>
+            <div class="text-sm text-text-muted">各種イベント</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Back Button -->
+  <section class="py-12">
+    <div class="container text-center">
+      <a href="/achievements" class="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        業績・成果に戻る
+      </a>
+    </div>
+  </section>
+</BaseLayout>
