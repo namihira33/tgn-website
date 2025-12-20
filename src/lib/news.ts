@@ -1,20 +1,20 @@
 import { getCollection } from 'astro:content';
 
-export type CategoryType = 'info' | 'event' | 'note';
+export type CategoryType = 'info' | 'event' | 'note' | 'report';
 
 export interface UnifiedNewsItem {
   id: string;
   title: string;
   date: Date;
   description?: string;
-  categories: CategoryType[]; // 複数カテゴリ対応
+  categories: CategoryType[];
   href: string;
   isExternal: boolean;
-  image?: string; // サムネイル画像
+  image?: string;
 }
 
 // noteのRSSフィードを取得
-async function fetchNoteArticles(): Promise<UnifiedNewsItem[]> {
+export async function fetchNoteArticles(): Promise<UnifiedNewsItem[]> {
   try {
     const response = await fetch('https://note.com/tkbgradnet/rss');
     const xml = await response.text();
@@ -28,21 +28,14 @@ async function fetchNoteArticles(): Promise<UnifiedNewsItem[]> {
       const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || '';
       const description = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/)?.[1] ||
                           item.match(/<description>(.*?)<\/description>/)?.[1] || '';
-      // media:thumbnail から画像を取得
       const image = item.match(/<media:thumbnail>(.*?)<\/media:thumbnail>/)?.[1] || '';
 
-      // HTMLタグを除去して短縮
       const cleanDescription = description
         .replace(/<[^>]*>/g, '')
         .substring(0, 100);
 
-      // タイトルからカテゴリを推測（イベント系のキーワードがあれば event も追加）
+      // note記事はデフォルトで活動報告扱い
       const categories: CategoryType[] = ['note'];
-      const lowerTitle = title.toLowerCase();
-      if (lowerTitle.includes('イベント') || lowerTitle.includes('開催') ||
-          lowerTitle.includes('募集') || lowerTitle.includes('参加者')) {
-        categories.push('event');
-      }
 
       return {
         id: `note-${index}`,
@@ -61,7 +54,7 @@ async function fetchNoteArticles(): Promise<UnifiedNewsItem[]> {
   }
 }
 
-// ローカルのNEWS記事を取得
+// ローカルのNEWS記事を取得（告知系）
 async function fetchLocalNews(): Promise<UnifiedNewsItem[]> {
   const allNews = await getCollection('news');
 
@@ -77,16 +70,32 @@ async function fetchLocalNews(): Promise<UnifiedNewsItem[]> {
   }));
 }
 
-// 統合してソート
+// NEWS用：告知・新情報（ローカル記事のみ、note記事は含まない）
+// 管理画面投稿はクライアントサイドで追加取得
 export async function getUnifiedNews(): Promise<UnifiedNewsItem[]> {
-  const [noteArticles, localNews] = await Promise.all([
+  const localNews = await fetchLocalNews();
+  return localNews.sort((a, b) => b.date.getTime() - a.date.getTime());
+}
+
+// 活動報告用：ローカルブログ + note記事
+export async function getActivityReports(): Promise<UnifiedNewsItem[]> {
+  const [noteArticles, blogPosts] = await Promise.all([
     fetchNoteArticles(),
-    fetchLocalNews(),
+    getCollection('blog'),
   ]);
 
-  const allItems = [...noteArticles, ...localNews];
+  const localBlog: UnifiedNewsItem[] = blogPosts.map(post => ({
+    id: post.id,
+    title: post.data.title,
+    date: new Date(post.data.date),
+    description: post.data.description,
+    categories: [post.data.category === 'report' ? 'report' : 'info'] as CategoryType[],
+    href: `/blog/${post.id}`,
+    isExternal: false,
+    image: post.data.image,
+  }));
 
-  // 日付で降順ソート
+  const allItems = [...noteArticles, ...localBlog];
   return allItems.sort((a, b) => b.date.getTime() - a.date.getTime());
 }
 

@@ -4,9 +4,7 @@ import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
 import { getUnifiedNews, formatDate, type CategoryType } from '../../lib/news';
 
-const allNews = await getUnifiedNews();
-const latestNews = allNews.slice(0, 3);
-
+const staticNews = await getUnifiedNews();
 const defaultImage = '/images/logo.jpg';
 
 function getCategoryLabel(category: CategoryType) {
@@ -24,14 +22,21 @@ function getCategoryClass(category: CategoryType) {
     default: return 'badge-info';
   }
 }
+
+// 静的記事をJSON形式で渡す
+const staticNewsJson = JSON.stringify(staticNews.map(n => ({
+  ...n,
+  date: n.date.toISOString()
+})));
 ---
 
 <section class="section bg-background">
   <div class="container">
     <SectionHeader title="NEWS" subtitle="最新のお知らせ・イベント情報" />
 
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-      {latestNews.map((news, index) => (
+    <div id="news-grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+      <!-- 初期表示: 静的記事のみ -->
+      {staticNews.slice(0, 3).map((news, index) => (
         <a
           href={news.href}
           target={news.isExternal ? '_blank' : undefined}
@@ -80,6 +85,98 @@ function getCategoryClass(category: CategoryType) {
     </div>
   </div>
 </section>
+
+<script define:vars={{ staticNewsJson, defaultImage }}>
+  // 管理画面投稿をAPIから取得してマージ
+  async function loadAdminPosts() {
+    try {
+      const response = await fetch('/api/posts');
+      if (!response.ok) return;
+
+      const { posts } = await response.json();
+      if (!posts || posts.length === 0) return;
+
+      // 静的記事をパース
+      const staticNews = JSON.parse(staticNewsJson);
+
+      // 管理画面投稿をUnifiedNewsItem形式に変換
+      const adminNews = posts.map(post => ({
+        id: `admin-${post.id}`,
+        title: post.title,
+        date: post.created_at,
+        description: post.content.substring(0, 100),
+        categories: [post.category || 'info'],
+        href: `/news/admin/${post.id}`,
+        isExternal: false,
+        image: post.image_url || null,
+      }));
+
+      // マージして日付順にソート
+      const allNews = [...staticNews, ...adminNews]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 3);
+
+      // グリッドを再レンダリング
+      const grid = document.getElementById('news-grid');
+      if (!grid) return;
+
+      grid.innerHTML = allNews.map((news, index) => {
+        const categoryLabels = { event: 'イベント', note: 'note', info: 'お知らせ', report: 'お知らせ' };
+        const categoryClasses = { note: 'badge-note', event: 'badge-event', info: 'badge-info', report: 'badge-info' };
+
+        const categoriesHtml = news.categories.map(cat =>
+          `<span class="badge-tag ${categoryClasses[cat] || 'badge-info'}">${categoryLabels[cat] || 'お知らせ'}</span>`
+        ).join('');
+
+        const date = new Date(news.date);
+        const dateStr = new Intl.DateTimeFormat('ja-JP', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        }).format(date);
+
+        const externalIcon = news.isExternal ? `
+          <div class="absolute top-2 right-2 bg-black/50 text-white p-1 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </div>
+        ` : '';
+
+        return `
+          <a
+            href="${news.href}"
+            ${news.isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}
+            class="card group fade-in overflow-hidden"
+            style="transition-delay: ${index * 100}ms"
+          >
+            <div class="aspect-video relative overflow-hidden bg-gray-100">
+              <img
+                src="${news.image || defaultImage}"
+                alt=""
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+              ${externalIcon}
+            </div>
+            <div class="p-4">
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                ${categoriesHtml}
+                <time class="text-xs text-text-muted">${dateStr}</time>
+              </div>
+              <h3 class="font-bold text-text group-hover:text-primary transition-colors line-clamp-2">
+                ${news.title}
+              </h3>
+            </div>
+          </a>
+        `;
+      }).join('');
+    } catch (error) {
+      console.error('Failed to load admin posts:', error);
+    }
+  }
+
+  // ページ読み込み時に実行
+  loadAdminPosts();
+</script>
 
 <style>
   .line-clamp-2 {

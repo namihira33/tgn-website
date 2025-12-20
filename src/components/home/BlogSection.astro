@@ -1,64 +1,72 @@
 ---
-import { getCollection } from 'astro:content';
 import SectionHeader from '../ui/SectionHeader.astro';
 import Button from '../ui/Button.astro';
+import { getActivityReports, formatDate, type CategoryType } from '../../lib/news';
 
-const allBlog = await getCollection('blog');
-const latestBlog = allBlog
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 3);
+const allReports = await getActivityReports();
+const latestReports = allReports.slice(0, 3);
 
 const defaultImage = '/images/logo.jpg';
 
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }).format(date);
+function getCategoryLabel(category: CategoryType) {
+  switch (category) {
+    case 'note': return 'note';
+    case 'report': return 'レポート';
+    default: return 'コラム';
+  }
 }
 
-function getCategoryLabel(category: string) {
-  return category === 'report' ? 'レポート' : 'コラム';
+function getCategoryClass(category: CategoryType) {
+  switch (category) {
+    case 'note': return 'badge-note';
+    case 'report': return 'badge-report';
+    default: return 'badge-column';
+  }
 }
 ---
 
 <section class="section bg-gray-50">
   <div class="container">
-    <SectionHeader title="ブログ" subtitle="活動レポート・コラム" />
+    <SectionHeader title="活動報告" subtitle="note記事・活動レポート" />
 
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-      {latestBlog.map((post, index) => (
+      {latestReports.map((report, index) => (
         <a
-          href={`/blog/${post.id}`}
+          href={report.href}
+          target={report.isExternal ? '_blank' : undefined}
+          rel={report.isExternal ? 'noopener noreferrer' : undefined}
           class="card group fade-in overflow-hidden"
           style={`transition-delay: ${index * 100}ms`}
         >
           <div class="aspect-video relative overflow-hidden bg-gray-100">
             <img
-              src={post.data.image || defaultImage}
+              src={report.image || defaultImage}
               alt=""
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
+            {report.isExternal && (
+              <div class="absolute top-2 right-2 bg-black/50 text-white p-1 rounded">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+            )}
           </div>
           <div class="p-4">
             <div class="flex flex-wrap items-center gap-2 mb-2">
-              <span class={`badge-tag ${post.data.category === 'report' ? 'badge-report' : 'badge-column'}`}>
-                {getCategoryLabel(post.data.category)}
-              </span>
+              {report.categories.map((cat) => (
+                <span class={`badge-tag ${getCategoryClass(cat)}`}>
+                  {getCategoryLabel(cat)}
+                </span>
+              ))}
               <time class="text-xs text-text-muted">
-                {formatDate(new Date(post.data.date))}
+                {formatDate(report.date)}
               </time>
             </div>
             <h3 class="font-bold text-text group-hover:text-primary transition-colors line-clamp-2">
-              {post.data.title}
+              {report.title}
             </h3>
-            {post.data.author && (
-              <p class="mt-2 text-xs text-text-muted">
-                by {post.data.author}
-              </p>
-            )}
           </div>
         </a>
       ))}
@@ -66,7 +74,7 @@ function getCategoryLabel(category: string) {
 
     <div class="text-center">
       <Button href="/blog" variant="outline">
-        すべてのブログを見る
+        すべての活動報告を見る
       </Button>
     </div>
   </div>
@@ -86,6 +94,11 @@ function getCategoryLabel(category: string) {
     font-size: 0.75rem;
     font-weight: 500;
     border-radius: 9999px;
+  }
+
+  .badge-note {
+    background-color: #41C9B4;
+    color: white;
   }
 
   .badge-report {
