@@ -115,14 +115,69 @@ function getCategoryClass(category: CategoryType) {
         return;
       }
 
-      // 既存のカードから情報を取得
+      // 既存のカードから情報を抽出して新しいカードを作成
       const existingCards = grid.querySelectorAll('.news-card');
       console.log('[NEWS] Existing cards:', existingCards.length);
 
-      const existingNews = Array.from(existingCards).map(card => ({
-        element: card.cloneNode(true),
-        date: new Date(card.getAttribute('data-date') || '1970-01-01')
-      }));
+      const existingNews = Array.from(existingCards).map(card => {
+        const dateStr = card.getAttribute('data-date') || '1970-01-01';
+        const date = new Date(dateStr);
+        const href = card.getAttribute('href') || '#';
+        const isExternal = card.getAttribute('target') === '_blank';
+        const img = card.querySelector('img');
+        const imageUrl = img ? img.getAttribute('src') : defaultImage;
+        const titleEl = card.querySelector('h2');
+        const title = titleEl?.textContent || '';
+        const descEl = card.querySelector('p');
+        const description = descEl?.textContent || '';
+        const badgeEl = card.querySelector('.badge-tag');
+        const badgeText = badgeEl?.textContent || 'お知らせ';
+        const badgeClass = badgeEl?.className || '';
+
+        // バッジの色を判定
+        let badgeColor = '#2563eb'; // デフォルト: info
+        if (badgeClass.includes('badge-event')) badgeColor = '#f59e0b';
+        if (badgeClass.includes('badge-note')) badgeColor = '#41C9B4';
+
+        const formattedDate = new Intl.DateTimeFormat('ja-JP', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        }).format(date);
+
+        // 新しいカードを作成（インラインスタイル）
+        const newCard = document.createElement('a');
+        newCard.href = href;
+        if (isExternal) {
+          newCard.target = '_blank';
+          newCard.rel = 'noopener noreferrer';
+        }
+        newCard.setAttribute('data-date', dateStr);
+        newCard.style.cssText = 'display:block; background:#fff; border-radius:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,0.1); overflow:hidden; transition:transform 0.2s, box-shadow 0.2s; text-decoration:none;';
+
+        const externalIcon = isExternal ? `<div style="position:absolute; top:0.5rem; right:0.5rem; background:rgba(0,0,0,0.5); color:white; padding:0.25rem; border-radius:0.25rem;"><svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></div>` : '';
+
+        newCard.innerHTML = `
+          <div style="aspect-ratio:16/9; position:relative; overflow:hidden; background:#f3f4f6;">
+            <img src="${imageUrl}" alt="" style="width:100%; height:100%; object-fit:cover;" loading="lazy" />
+            ${externalIcon}
+          </div>
+          <div style="padding:1rem;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+              <span style="display:inline-block; padding:0.125rem 0.5rem; font-size:0.75rem; font-weight:500; border-radius:9999px; background:${badgeColor}; color:white;">${badgeText}</span>
+              <time style="font-size:0.75rem; color:#6b7280;">${formattedDate}</time>
+            </div>
+            <h2 style="font-weight:700; font-size:1.125rem; color:#1a1a1a; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${title}</h2>
+            ${description ? `<p style="margin-top:0.5rem; font-size:0.875rem; color:#6b7280; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${description}</p>` : ''}
+          </div>
+        `;
+
+        newCard.onmouseenter = () => { newCard.style.transform = 'translateY(-4px)'; newCard.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)'; };
+        newCard.onmouseleave = () => { newCard.style.transform = ''; newCard.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'; };
+
+        return {
+          element: newCard,
+          date: date
+        };
+      });
 
       // admin投稿をカードに変換
       const adminCards = posts.map(post => {
