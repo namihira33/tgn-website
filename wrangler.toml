@@ -1,3 +1,13 @@
 name = "tgn-website"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "dist"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "tgn-posts"
+database_id = "placeholder"  # Cloudflareダッシュボードで作成後に更新
+
+# 環境変数
+[vars]
+ADMIN_PASSWORD = "TGN201512201"

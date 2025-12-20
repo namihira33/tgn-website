@@ -1,0 +1,143 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+
+// 業績・成果データ
+const achievements = {
+  events: [
+    { year: '2024', title: 'つくばQxQ Meet & Research', description: '異分野研究交流イベント。ポスター展示と研究紹介を実施。' },
+    { year: '2024', title: '院生カフェ つくば大学店', description: '地域住民と院生の科学コミュニケーションイベント' },
+    { year: '2024', title: '院生忘年会', description: '異分野の大学院生同士の交流会' },
+    { year: '2024', title: '新歓イベント', description: '新入生歓迎イベント' },
+    { year: '2023', title: '隔週フリートークスペース配信', description: 'X（Twitter）スペースでの定期配信' },
+  ],
+  media: [
+    { year: '2024', title: 'note定期投稿', description: '研究紹介・活動報告を継続的に発信', link: 'https://note.com/tkbgradnet' },
+    { year: '2024', title: 'X（Twitter）公式アカウント運営', description: 'フォロワーへの情報発信', link: 'https://twitter.com/TGN_Account' },
+  ],
+  collaborations: [
+    { year: '2024', title: '筑波大学との連携', description: '大学公認団体として活動' },
+  ],
+  stats: [
+    { label: 'メンバー数', value: '約30名', icon: 'users' },
+    { label: '開催イベント数', value: '10+', icon: 'calendar' },
+    { label: 'note記事数', value: '20+', icon: 'document' },
+    { label: '活動年数', value: '10年+', icon: 'clock' },
+  ]
+};
+---
+
+<BaseLayout title="業績・成果" description="つくば院生ネットワーク（TGN）の活動実績・成果をご紹介します">
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-primary to-primary-dark text-white py-16 md:py-24">
+    <div class="container text-center">
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">業績・成果</h1>
+      <p class="text-primary-light max-w-2xl mx-auto">
+        TGNはこれまで様々なイベントの開催、メディア発信、コラボレーションを行ってきました。
+      </p>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="py-12 bg-white -mt-8 relative z-10">
+    <div class="container">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        {achievements.stats.map(stat => (
+          <div class="text-center p-6 bg-gray-50 rounded-xl">
+            <div class="text-3xl md:text-4xl font-bold text-primary mb-2">{stat.value}</div>
+            <div class="text-sm text-text-muted">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Events -->
+  <section class="section">
+    <div class="container">
+      <SectionHeader title="主催イベント" subtitle="これまでに開催したイベント" />
+
+      <div class="max-w-3xl mx-auto">
+        <div class="space-y-4">
+          {achievements.events.map(event => (
+            <div class="flex gap-4 p-4 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
+              <div class="flex-shrink-0 w-16 text-center">
+                <span class="inline-block px-2 py-1 bg-primary/10 text-primary text-sm font-medium rounded">
+                  {event.year}
+                </span>
+              </div>
+              <div>
+                <h3 class="font-bold text-text">{event.title}</h3>
+                <p class="text-sm text-text-muted mt-1">{event.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Media -->
+  <section class="section bg-gray-50">
+    <div class="container">
+      <SectionHeader title="メディア・発信活動" subtitle="情報発信の取り組み" />
+
+      <div class="max-w-3xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-6">
+          {achievements.media.map(item => (
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block p-6 bg-white rounded-xl border border-gray-100 hover:shadow-md transition-shadow group"
+            >
+              <div class="flex items-start justify-between">
+                <div>
+                  <span class="inline-block px-2 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded mb-2">
+                    {item.year}
+                  </span>
+                  <h3 class="font-bold text-text group-hover:text-primary transition-colors">{item.title}</h3>
+                  <p class="text-sm text-text-muted mt-1">{item.description}</p>
+                </div>
+                <svg class="w-5 h-5 text-text-muted group-hover:text-primary transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Future Plans -->
+  <section class="section">
+    <div class="container">
+      <SectionHeader title="今後の展望" subtitle="これからの活動計画" />
+
+      <div class="max-w-3xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl">
+            <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 class="font-bold text-text mb-2">院生ひろば（計画中）</h3>
+            <p class="text-sm text-text-muted">大学院生同士がより気軽に交流できる場の創出</p>
+          </div>
+
+          <div class="p-6 bg-gradient-to-br from-secondary/5 to-secondary/10 rounded-xl">
+            <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+            </div>
+            <h3 class="font-bold text-text mb-2">他大学との連携</h3>
+            <p class="text-sm text-text-muted">つくば地域の他大学院生との交流拡大</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

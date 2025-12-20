@@ -1,0 +1,64 @@
+---
+import Button from '../ui/Button.astro';
+
+const stats = [
+  { label: 'メンバー数', value: '約30名' },
+  { label: '開催イベント', value: '10+' },
+  { label: 'note記事', value: '20+' },
+  { label: '活動年数', value: '10年+' },
+];
+
+const highlights = [
+  { title: 'つくばQxQ', description: '異分野研究交流イベント' },
+  { title: '院生カフェ', description: '科学コミュニケーション' },
+  { title: 'フリートーク配信', description: 'X Spaceでの定期配信' },
+];
+---
+
+<section class="section bg-white">
+  <div class="container">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-text mb-4">
+          活動実績・成果
+        </h2>
+        <p class="text-text-muted mb-6">
+          TGNは2015年の設立以来、異分野交流イベントや科学コミュニケーション活動を通じて、
+          大学院生同士のネットワーク構築に取り組んできました。
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          {stats.map(stat => (
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="text-2xl font-bold text-primary">{stat.value}</div>
+              <div class="text-xs text-text-muted">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <Button href="/achievements" variant="outline">
+          業績を詳しく見る
+        </Button>
+      </div>
+
+      <div class="space-y-4">
+        {highlights.map((item, index) => (
+          <div
+            class="flex items-center gap-4 p-4 bg-gradient-to-r from-primary/5 to-transparent rounded-lg fade-in"
+            style={`transition-delay: ${index * 100}ms`}
+          >
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-text">{item.title}</h3>
+              <p class="text-sm text-text-muted">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
