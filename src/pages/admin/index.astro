@@ -444,9 +444,12 @@
     async function loadPosts() {
       try {
         const res = await fetch('/api/posts');
-        posts = await res.json();
+        const data = await res.json();
+        posts = data.posts || [];
+        console.log('Loaded posts:', posts);
         renderPosts();
-      } catch {
+      } catch (error) {
+        console.error('Failed to load posts:', error);
         postsList.innerHTML = '<div class="loading">記事の読み込みに失敗しました</div>';
       }
     }
@@ -465,11 +468,15 @@
               ${post.category === 'event' ? 'イベント' : 'お知らせ'}
             </span>
             <h3>${escapeHtml(post.title)}</h3>
-            <p class="post-meta">${formatDate(post.created_at)}</p>
+            <p class="post-meta">公開日: ${formatDate(post.published_at || post.created_at)}</p>
           </div>
           <div class="post-actions">
             <button class="btn btn-secondary" onclick="editPost(${post.id})" style="font-size: 0.875rem; padding: 0.5rem 1rem;">
               編集
+            </button>
+            <button class="btn btn-danger" onclick="confirmDelete(${post.id}, '${escapeHtml(post.title).replace(/'/g, "\\'")}')"\
+              style="font-size: 0.875rem; padding: 0.5rem 1rem;">
+              削除
             </button>
           </div>
         </div>
@@ -492,6 +499,26 @@
       document.getElementById('delete-btn').classList.add('hidden');
       showEditor();
     });
+
+    // Confirm and delete post from list
+    window.confirmDelete = async function(id, title) {
+      if (!confirm(`「${title}」を削除しますか？`)) return;
+
+      try {
+        const res = await fetch(`/api/posts?id=${id}`, {
+          method: 'DELETE'
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          loadPosts();
+        } else {
+          alert(data.error || '削除に失敗しました');
+        }
+      } catch {
+        alert('サーバーエラーが発生しました');
+      }
+    };
 
     // Edit post
     window.editPost = function(id) {

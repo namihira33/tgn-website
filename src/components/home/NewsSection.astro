@@ -175,9 +175,11 @@ function getCategoryClass(category: CategoryType) {
 
       // admin投稿をカードに変換
       const adminCards = posts.map(post => {
-        console.log('Creating card for post:', post.id, post.title);
+        console.log('Creating card for post:', post.id, post.title, 'published_at:', post.published_at);
 
-        const date = new Date(post.created_at);
+        // published_atがあればそれを使用、なければcreated_atを使用
+        const postDate = post.published_at || post.created_at;
+        const date = new Date(postDate);
         const dateStr = new Intl.DateTimeFormat('ja-JP', {
           year: 'numeric', month: 'long', day: 'numeric'
         }).format(date);
@@ -189,7 +191,7 @@ function getCategoryClass(category: CategoryType) {
 
         const card = document.createElement('a');
         card.href = '/news/admin/' + post.id;
-        card.setAttribute('data-date', post.created_at);
+        card.setAttribute('data-date', postDate);
         card.style.cssText = 'display:block; background:#fff; border-radius:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,0.1); overflow:hidden; transition:transform 0.2s, box-shadow 0.2s; text-decoration:none;';
 
         card.innerHTML = `
