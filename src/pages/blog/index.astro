@@ -1,69 +1,79 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeader from '../../components/ui/SectionHeader.astro';
-import Badge from '../../components/ui/Badge.astro';
+import { getActivityReports, formatDate, type CategoryType } from '../../lib/news';
 
-const allBlog = await getCollection('blog');
-const sortedBlog = allBlog.sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
+const allReports = await getActivityReports();
+const defaultImage = '/images/logo.jpg';
 
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }).format(date);
-};
+function getCategoryLabel(category: CategoryType) {
+  switch (category) {
+    case 'note': return 'note';
+    case 'report': return 'レポート';
+    default: return 'コラム';
+  }
+}
 
-const getCategoryLabel = (category: string) => {
-  const labels: Record<string, string> = {
-    report: '活動報告',
-    column: 'コラム'
-  };
-  return labels[category] || category;
-};
+function getCategoryClass(category: CategoryType) {
+  switch (category) {
+    case 'note': return 'badge-note';
+    case 'report': return 'badge-report';
+    default: return 'badge-column';
+  }
+}
 ---
 
-<BaseLayout title="ブログ" description="つくば院生ネットワーク（TGN）の活動報告・コラム">
+<BaseLayout title="活動報告" description="つくば院生ネットワーク（TGN）の活動報告・note記事">
   <section class="section">
     <div class="container">
       <SectionHeader
-        title="ブログ"
-        subtitle="活動報告・コラム"
+        title="活動報告"
+        subtitle="note記事・活動レポート"
       />
 
-      <div class="grid gap-8">
-        {sortedBlog.map((post, index) => (
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {allReports.map((report, index) => (
           <a
-            href={`/blog/${post.id}`}
-            class="card group fade-in"
+            href={report.href}
+            target={report.isExternal ? '_blank' : undefined}
+            rel={report.isExternal ? 'noopener noreferrer' : undefined}
+            class="card group fade-in overflow-hidden"
             style={`transition-delay: ${index * 50}ms`}
           >
-            <div class="p-6 md:p-8">
-              <div class="flex flex-wrap items-center gap-3 mb-4">
-                <Badge variant={post.data.category === 'column' ? 'secondary' : 'primary'}>
-                  {getCategoryLabel(post.data.category)}
-                </Badge>
-                <time class="text-sm text-text-muted">
-                  {formatDate(new Date(post.data.date))}
+            <div class="aspect-video relative overflow-hidden bg-gray-100">
+              <img
+                src={report.image || defaultImage}
+                alt=""
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+              {report.isExternal && (
+                <div class="absolute top-2 right-2 bg-black/50 text-white p-1 rounded">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div class="p-4">
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                {report.categories.map((cat) => (
+                  <span class={`badge-tag ${getCategoryClass(cat)}`}>
+                    {getCategoryLabel(cat)}
+                  </span>
+                ))}
+                <time class="text-xs text-text-muted">
+                  {formatDate(report.date)}
                 </time>
               </div>
-              <h2 class="font-bold text-xl md:text-2xl text-text group-hover:text-primary transition-colors mb-3">
-                {post.data.title}
+              <h2 class="font-bold text-text group-hover:text-primary transition-colors line-clamp-2">
+                {report.title}
               </h2>
-              {post.data.description && (
-                <p class="text-text-muted line-clamp-3">
-                  {post.data.description}
+              {report.description && (
+                <p class="mt-2 text-sm text-text-muted line-clamp-2">
+                  {report.description}
                 </p>
               )}
-              <div class="mt-4 text-primary font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
-                続きを読む
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
             </div>
           </a>
         ))}
@@ -73,10 +83,33 @@ const getCategoryLabel = (category: string) => {
 </BaseLayout>
 
 <style>
-  .line-clamp-3 {
+  .line-clamp-2 {
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .badge-tag {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+  }
+
+  .badge-note {
+    background-color: #41C9B4;
+    color: white;
+  }
+
+  .badge-report {
+    background-color: #6366F1;
+    color: white;
+  }
+
+  .badge-column {
+    background-color: #8B5CF6;
+    color: white;
   }
 </style>

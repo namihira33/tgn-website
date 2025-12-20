@@ -16,17 +16,7 @@ export interface UnifiedNewsItem {
 // noteのRSSフィードを取得
 export async function fetchNoteArticles(): Promise<UnifiedNewsItem[]> {
   try {
-    const response = await fetch('https://note.com/tkbgradnet/rss', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; TGN-Website/1.0)',
-      },
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch note RSS:', response.status);
-      return [];
-    }
-
+    const response = await fetch('https://note.com/tkbgradnet/rss');
     const xml = await response.text();
 
     const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
@@ -38,12 +28,7 @@ export async function fetchNoteArticles(): Promise<UnifiedNewsItem[]> {
       const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || '';
       const description = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/)?.[1] ||
                           item.match(/<description>(.*?)<\/description>/)?.[1] || '';
-
-      // media:thumbnail の取得（属性からURLを取得）
-      const thumbnailMatch = item.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/);
-      // または enclosure から画像を取得
-      const enclosureMatch = item.match(/<enclosure[^>]*url=["']([^"']+)["'][^>]*type=["']image/);
-      const image = thumbnailMatch?.[1] || enclosureMatch?.[1] || '';
+      const image = item.match(/<media:thumbnail>(.*?)<\/media:thumbnail>/)?.[1] || '';
 
       const cleanDescription = description
         .replace(/<[^>]*>/g, '')
