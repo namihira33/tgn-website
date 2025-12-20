@@ -86,24 +86,46 @@ function getCategoryClass(category: CategoryType) {
 
     try {
       const response = await fetch('/api/posts');
-      if (!response.ok) return;
+      console.log('API Response status:', response.status);
+
+      if (!response.ok) {
+        console.log('API not available');
+        return;
+      }
 
       const data = await response.json();
+      console.log('API Response data:', data);
+
       const posts = data.posts || [];
-      if (posts.length === 0) return;
+      console.log('Posts count:', posts.length);
+
+      if (posts.length === 0) {
+        console.log('No admin posts found');
+        return;
+      }
 
       const grid = document.getElementById('news-grid');
-      if (!grid) return;
+      if (!grid) {
+        console.log('Grid not found');
+        return;
+      }
 
-      // 既存のカードから日付を取得
+      // 既存のカードをクローンして保存
       const existingCards = grid.querySelectorAll('.news-card');
-      const existingNews = Array.from(existingCards).map(card => ({
-        element: card,
-        date: new Date(card.getAttribute('data-date') || '1970-01-01')
-      }));
+      console.log('Existing cards:', existingCards.length);
+
+      const existingNews = Array.from(existingCards).map(card => {
+        const clonedCard = card.cloneNode(true);
+        return {
+          element: clonedCard,
+          date: new Date(card.getAttribute('data-date') || '1970-01-01')
+        };
+      });
 
       // admin投稿をカードに変換
       const adminCards = posts.map(post => {
+        console.log('Creating card for post:', post.id, post.title);
+
         const date = new Date(post.created_at);
         const dateStr = new Intl.DateTimeFormat('ja-JP', {
           year: 'numeric', month: 'long', day: 'numeric'
@@ -118,7 +140,20 @@ function getCategoryClass(category: CategoryType) {
         card.href = '/news/admin/' + post.id;
         card.className = 'card group fade-in overflow-hidden news-card';
         card.setAttribute('data-date', post.created_at);
-        card.innerHTML = '<div class="aspect-video relative overflow-hidden bg-gray-100"><img src="' + imageUrl + '" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div><div class="p-4"><div class="flex flex-wrap items-center gap-2 mb-2"><span class="badge-tag ' + (categoryClasses[category] || 'badge-info') + '">' + (categoryLabels[category] || 'お知らせ') + '</span><time class="text-xs text-text-muted">' + dateStr + '</time></div><h3 class="font-bold text-text group-hover:text-primary transition-colors line-clamp-2">' + post.title + '</h3></div>';
+
+        const cardHtml = `
+          <div class="aspect-video relative overflow-hidden bg-gray-100">
+            <img src="${imageUrl}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+          </div>
+          <div class="p-4">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span class="badge-tag ${categoryClasses[category] || 'badge-info'}">${categoryLabels[category] || 'お知らせ'}</span>
+              <time class="text-xs text-text-muted">${dateStr}</time>
+            </div>
+            <h3 class="font-bold text-text group-hover:text-primary transition-colors line-clamp-2">${post.title}</h3>
+          </div>
+        `;
+        card.innerHTML = cardHtml;
 
         return {
           element: card,
@@ -131,12 +166,16 @@ function getCategoryClass(category: CategoryType) {
         .sort((a, b) => b.date.getTime() - a.date.getTime())
         .slice(0, 3);
 
+      console.log('Total cards after merge:', allCards.length);
+
       // グリッドを再構築
       grid.innerHTML = '';
       allCards.forEach((item, index) => {
         item.element.style.transitionDelay = (index * 100) + 'ms';
         grid.appendChild(item.element);
       });
+
+      console.log('Grid updated successfully');
     } catch (error) {
       console.error('Failed to load admin posts:', error);
     }
