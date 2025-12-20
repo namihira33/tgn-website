@@ -29,17 +29,18 @@ function getCategoryClass(category: CategoryType) {
     <div class="container">
       <SectionHeader
         title="NEWS"
-        subtitle="最新のお知らせ・イベント情報（note記事を含む）"
+        subtitle="最新のお知らせ・イベント情報"
       />
 
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div id="news-list" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {allNews.map((news, index) => (
           <a
             href={news.href}
             target={news.isExternal ? '_blank' : undefined}
             rel={news.isExternal ? 'noopener noreferrer' : undefined}
-            class="card group fade-in overflow-hidden"
+            class="card group fade-in overflow-hidden news-card"
             style={`transition-delay: ${Math.min(index, 10) * 50}ms`}
+            data-date={news.date.toISOString()}
           >
             <div class="aspect-video relative overflow-hidden bg-gray-100">
               <img
@@ -82,6 +83,77 @@ function getCategoryClass(category: CategoryType) {
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // 管理画面投稿をAPIから取得して追加
+  async function loadAdminPosts() {
+    const defaultImage = '/images/logo.jpg';
+
+    try {
+      const response = await fetch('/api/posts');
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const posts = data.posts || [];
+      if (posts.length === 0) return;
+
+      const grid = document.getElementById('news-list');
+      if (!grid) return;
+
+      // 既存のカードから情報を取得
+      const existingCards = grid.querySelectorAll('.news-card');
+      const existingNews = Array.from(existingCards).map(card => ({
+        element: card.cloneNode(true),
+        date: new Date(card.getAttribute('data-date') || '1970-01-01')
+      }));
+
+      // admin投稿をカードに変換
+      const adminCards = posts.map(post => {
+        const date = new Date(post.created_at);
+        const dateStr = new Intl.DateTimeFormat('ja-JP', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        }).format(date);
+
+        const imageUrl = post.image_url || defaultImage;
+        const category = post.category || 'info';
+        const categoryLabels = { event: 'イベント', info: 'お知らせ' };
+        const categoryClasses = { event: 'badge-event', info: 'badge-info' };
+        const description = post.content ? post.content.substring(0, 100) + '...' : '';
+
+        const card = document.createElement('a');
+        card.href = '/news/admin/' + post.id;
+        card.className = 'card group fade-in overflow-hidden news-card';
+        card.setAttribute('data-date', post.created_at);
+        card.innerHTML = '<div class="aspect-video relative overflow-hidden bg-gray-100"><img src="' + imageUrl + '" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div><div class="p-4"><div class="flex flex-wrap items-center gap-2 mb-2"><span class="badge-tag ' + (categoryClasses[category] || 'badge-info') + '">' + (categoryLabels[category] || 'お知らせ') + '</span><time class="text-xs text-text-muted">' + dateStr + '</time></div><h2 class="font-bold text-lg text-text group-hover:text-primary transition-colors line-clamp-2">' + post.title + '</h2>' + (description ? '<p class="mt-2 text-sm text-text-muted line-clamp-2">' + description + '</p>' : '') + '</div>';
+
+        return {
+          element: card,
+          date: date
+        };
+      });
+
+      // 全て結合して日付順にソート
+      const allCards = [...existingNews, ...adminCards]
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      // グリッドを再構築
+      grid.innerHTML = '';
+      allCards.forEach((item, index) => {
+        item.element.style.transitionDelay = (Math.min(index, 10) * 50) + 'ms';
+        grid.appendChild(item.element);
+      });
+    } catch (error) {
+      console.error('Failed to load admin posts:', error);
+    }
+  }
+
+  // ページ読み込み時に実行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadAdminPosts);
+  } else {
+    loadAdminPosts();
+  }
+</script>
 
 <style>
   .line-clamp-2 {
