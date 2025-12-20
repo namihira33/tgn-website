@@ -12,10 +12,12 @@ interface Props {
 const {
   title,
   description = 'つくば院生ネットワーク（TGN）は、筑波大学の大学院生による異分野交流・科学コミュニケーション団体です。',
-  ogImage = '/og-image.png'
+  ogImage = '/og-image.jpg'
 } = Astro.props;
 
 const siteTitle = title === 'TGN' ? 'つくば院生ネットワーク | TGN' : `${title} | TGN`;
+const siteUrl = 'https://tgn.official.jp';
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
 ---
 
 <!DOCTYPE html>
@@ -28,13 +30,16 @@ const siteTitle = title === 'TGN' ? 'つくば院生ネットワーク | TGN' : 
     <!-- Open Graph -->
     <meta property="og:title" content={siteTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:url" content={siteUrl} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="つくば院生ネットワーク（TGN）" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={siteTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
