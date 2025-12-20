@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { archiveItems, categoryColors } from '../../../data/archiveItems';
+
+export function getStaticPaths() {
+  return archiveItems.map(item => ({
+    params: { slug: item.slug },
+    props: item,
+  }));
+}
+
+const { slug } = Astro.params;
+const article = archiveItems.find(item => item.slug === slug);
+
+if (!article) {
+  return Astro.redirect('/achievements/archive');
+}
+
+// 前後の記事を取得
+const currentIndex = archiveItems.findIndex(item => item.slug === slug);
+const prevArticle = currentIndex < archiveItems.length - 1 ? archiveItems[currentIndex + 1] : null;
+const nextArticle = currentIndex > 0 ? archiveItems[currentIndex - 1] : null;
+---
+
+<BaseLayout title={article.title} description={article.content.substring(0, 100)}>
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-primary to-primary-dark text-white py-12 md:py-16">
+    <div class="container">
+      <div class="max-w-3xl mx-auto">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class={`px-3 py-1 text-sm text-white rounded-full ${categoryColors[article.category] || 'bg-gray-500'}`}>
+            {article.category}
+          </span>
+          <time class="text-primary-light">
+            {article.date.replace(/-/g, '/')}
+          </time>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold">{article.title}</h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- Breadcrumb -->
+  <div class="bg-gray-50 py-3">
+    <div class="container">
+      <nav class="text-sm text-text-muted">
+        <a href="/" class="hover:text-primary">ホーム</a>
+        <span class="mx-2">/</span>
+        <a href="/achievements" class="hover:text-primary">業績・成果</a>
+        <span class="mx-2">/</span>
+        <a href="/achievements/archive" class="hover:text-primary">過去記事アーカイブ</a>
+        <span class="mx-2">/</span>
+        <span class="text-text">{article.title}</span>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <article class="section">
+    <div class="container">
+      <div class="max-w-3xl mx-auto">
+        <div class="prose prose-lg max-w-none">
+          {article.content.split('\n\n').map(paragraph => {
+            if (paragraph.startsWith('## ')) {
+              return <h2 class="text-xl font-bold text-text mt-8 mb-4">{paragraph.replace('## ', '')}</h2>;
+            } else if (paragraph.startsWith('### ')) {
+              return <h3 class="text-lg font-bold text-text mt-6 mb-3">{paragraph.replace('### ', '')}</h3>;
+            } else if (paragraph.startsWith('- ')) {
+              const items = paragraph.split('\n').filter(line => line.startsWith('- '));
+              return (
+                <ul class="list-disc list-inside space-y-2 my-4 text-text-muted">
+                  {items.map(item => <li>{item.replace('- ', '')}</li>)}
+                </ul>
+              );
+            } else if (paragraph.includes('**')) {
+              return (
+                <p class="text-text-muted leading-relaxed my-4" set:html={
+                  paragraph.replace(/\*\*(.*?)\*\*/g, '<strong class="text-text">$1</strong>')
+                } />
+              );
+            } else {
+              return <p class="text-text-muted leading-relaxed my-4">{paragraph}</p>;
+            }
+          })}
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+          <div class="flex justify-between items-center">
+            {prevArticle ? (
+              <a href={`/achievements/archive/${prevArticle.slug}`} class="flex items-center gap-2 text-primary hover:text-primary-dark">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span class="text-sm">{prevArticle.title.substring(0, 20)}...</span>
+              </a>
+            ) : <div />}
+
+            <a href="/achievements/archive" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-text-muted">
+              一覧に戻る
+            </a>
+
+            {nextArticle ? (
+              <a href={`/achievements/archive/${nextArticle.slug}`} class="flex items-center gap-2 text-primary hover:text-primary-dark">
+                <span class="text-sm">{nextArticle.title.substring(0, 20)}...</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            ) : <div />}
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

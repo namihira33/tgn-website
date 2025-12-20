@@ -1,50 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-
-// 過去の活動記録（XMLから抽出した主要な記事）
-const archiveItems = [
-  // 2018年
-  { date: '2018-09-30', title: 'Student Presentation Battle (TGSW2018) 活動報告', category: '院生プレゼンバトル' },
-  { date: '2018-07-19', title: '【第2回7/24】デモプレ開催します！', category: 'イベント' },
-  { date: '2018-06-27', title: '第一回つくばカルチェ・ラタン開催！', category: 'イベント' },
-  { date: '2018-06-25', title: '【活動報告】デモプレ(第１回6/20開催)', category: '活動報告' },
-  { date: '2018-06-12', title: '【第1回6/20】「デモプレ」開催します！', category: 'イベント' },
-  { date: '2018-03-18', title: '"英語版"学生プレゼンバトル開催決定！（TGSW2018）', category: '院生プレゼンバトル' },
-
-  // 2015年
-  { date: '2015-01-22', title: '1月23日のプレゼンひろば', category: 'プレゼンひろば' },
-  { date: '2015-01-20', title: '【ご報告】12月19日のプレゼンひろば', category: 'プレゼンひろば' },
-
-  // 2014年
-  { date: '2014-12-16', title: '12月19日のプレゼンひろば', category: 'プレゼンひろば' },
-  { date: '2014-10-29', title: '11月3日のプレゼンひろば', category: 'プレゼンひろば' },
-  { date: '2014-04-16', title: 'T-ACT表彰式において「プレゼンひろば」が優秀賞を受賞', category: '受賞' },
-  { date: '2014-04-16', title: 'プレゼンひろば 特別週間(4/21~4/25)', category: 'プレゼンひろば' },
-
-  // 2013年
-  { date: '2013-12-05', title: 'プレゼンテーションセミナーのお知らせ', category: 'セミナー' },
-  { date: '2013-11-16', title: '院生プレゼンバトル2013 結果報告', category: '院生プレゼンバトル' },
-  { date: '2013-11-02', title: '雙峰祭グランプリ2013', category: 'イベント' },
-  { date: '2013-10-28', title: '学内研究企画2013パンフレット完成', category: '学研企画' },
-  { date: '2013-10-10', title: '院生プレゼンバトル2013 予選開幕', category: '院生プレゼンバトル' },
-  { date: '2013-08-01', title: '院生プレゼンバトル2013 エントリー受付開始', category: '院生プレゼンバトル' },
-  { date: '2013-05-20', title: '今年もやります！院生プレゼンバトル2013', category: '院生プレゼンバトル' },
-
-  // 2012年
-  { date: '2012-10-10', title: '院生プレゼンバトル2012', category: '院生プレゼンバトル' },
-  { date: '2012-10-08', title: '院生プレゼンバトル2012-結果', category: '院生プレゼンバトル' },
-  { date: '2012-10-04', title: 'D3からみた院生プレゼンバトル', category: 'ブログ' },
-  { date: '2012-09-14', title: '学研企画パンフレット完成！', category: '学研企画' },
-  { date: '2012-07-29', title: '院生プレゼンバトル2012 エントリー開始！', category: '院生プレゼンバトル' },
-  { date: '2012-07-11', title: '大学院生学際研究フォーラム 院生プレゼンバトル2012', category: '院生プレゼンバトル' },
-  { date: '2012-07-11', title: '第一線研究者 教員プレゼンバトル', category: '教員プレゼンバトル' },
-  { date: '2012-07-10', title: 'Monday Morning Institute: MMI –street scientists–', category: 'MMI' },
-  { date: '2012-04-20', title: 'MMI特別週間：MAINICHI Morning Institute', category: 'MMI' },
-
-  // 2011年
-  { date: '2011-11-01', title: '学内研究企画増加プロジェクト', category: '学研企画' },
-  { date: '2011-10-11', title: '院生プレゼンバトル2011', category: '院生プレゼンバトル' },
-];
+import { archiveItems, categoryColors } from '../../data/archiveItems';
 
 // 年ごとにグループ化
 const groupedArchive = archiveItems.reduce((acc, item) => {
@@ -55,20 +11,6 @@ const groupedArchive = archiveItems.reduce((acc, item) => {
 }, {} as Record<string, typeof archiveItems>);
 
 const years = Object.keys(groupedArchive).sort((a, b) => parseInt(b) - parseInt(a));
-
-// カテゴリカラー
-const categoryColors: Record<string, string> = {
-  '院生プレゼンバトル': 'bg-blue-500',
-  '教員プレゼンバトル': 'bg-purple-500',
-  'プレゼンひろば': 'bg-green-500',
-  'MMI': 'bg-teal-500',
-  '学研企画': 'bg-orange-500',
-  'イベント': 'bg-pink-500',
-  '活動報告': 'bg-cyan-500',
-  'ブログ': 'bg-gray-500',
-  'セミナー': 'bg-indigo-500',
-  '受賞': 'bg-yellow-500',
-};
 ---
 
 <BaseLayout title="過去記事アーカイブ" description="つくば院生ネットワーク（TGN）の過去の活動記録">
@@ -107,17 +49,26 @@ const categoryColors: Record<string, string> = {
               </span>
               {year}年
             </h2>
-            <div class="grid gap-3">
+            <div class="grid gap-4">
               {groupedArchive[year].map(item => (
-                <div class="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
-                  <time class="flex-shrink-0 text-sm text-text-muted w-24">
-                    {item.date.replace(/-/g, '/')}
-                  </time>
-                  <span class={`flex-shrink-0 px-2 py-0.5 text-xs text-white rounded ${categoryColors[item.category] || 'bg-gray-500'}`}>
-                    {item.category}
+                <a href={`/achievements/archive/${item.slug}`} class="block p-5 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all group">
+                  <div class="flex flex-wrap items-center gap-3 mb-2">
+                    <time class="text-sm text-text-muted">
+                      {item.date.replace(/-/g, '/')}
+                    </time>
+                    <span class={`px-2 py-0.5 text-xs text-white rounded ${categoryColors[item.category] || 'bg-gray-500'}`}>
+                      {item.category}
+                    </span>
+                  </div>
+                  <h3 class="font-bold text-text mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
+                  <p class="text-sm text-text-muted leading-relaxed line-clamp-2">{item.content}</p>
+                  <span class="inline-flex items-center gap-1 mt-3 text-sm text-primary font-medium">
+                    詳しく読む
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </span>
-                  <h3 class="font-medium text-text flex-1">{item.title}</h3>
-                </div>
+                </a>
               ))}
             </div>
           </div>
@@ -173,3 +124,12 @@ const categoryColors: Record<string, string> = {
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -83,37 +83,40 @@ function getCategoryClass(category: CategoryType) {
   // 管理画面投稿をAPIから取得して追加
   async function loadAdminPosts() {
     const defaultImage = '/images/logo.jpg';
+    const grid = document.getElementById('news-grid');
+    if (!grid) {
+      console.log('Grid not found');
+      return;
+    }
 
+    // 先に既存カードの情報を抽出（API失敗時も使うため）
+    const existingCards = grid.querySelectorAll('.news-card');
+    console.log('Existing cards:', existingCards.length);
+
+    let posts = [];
     try {
       const response = await fetch('/api/posts');
       console.log('API Response status:', response.status);
 
-      if (!response.ok) {
-        console.log('API not available');
-        return;
+      if (response.ok) {
+        const data = await response.json();
+        console.log('API Response data:', data);
+        posts = data.posts || [];
+        console.log('Posts count:', posts.length);
+      } else {
+        console.log('API not available, keeping existing cards');
       }
+    } catch (error) {
+      console.log('API fetch failed, keeping existing cards:', error);
+    }
 
-      const data = await response.json();
-      console.log('API Response data:', data);
+    // admin投稿がなければ既存カードをそのまま維持
+    if (posts.length === 0) {
+      console.log('No admin posts, keeping original cards');
+      return;
+    }
 
-      const posts = data.posts || [];
-      console.log('Posts count:', posts.length);
-
-      if (posts.length === 0) {
-        console.log('No admin posts found');
-        return;
-      }
-
-      const grid = document.getElementById('news-grid');
-      if (!grid) {
-        console.log('Grid not found');
-        return;
-      }
-
-      // 既存のカードから情報を抽出して新しいカードを作成
-      const existingCards = grid.querySelectorAll('.news-card');
-      console.log('Existing cards:', existingCards.length);
-
+    try {
       const existingNews = Array.from(existingCards).map(card => {
         const dateStr = card.getAttribute('data-date') || '1970-01-01';
         const date = new Date(dateStr);

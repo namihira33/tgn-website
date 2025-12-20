@@ -87,15 +87,29 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    const result = await env.DB.prepare(
-      'INSERT INTO posts (title, content, category, image_url, published_at) VALUES (?, ?, ?, ?, ?)'
-    ).bind(
-      post.title,
-      post.content,
-      post.category || 'info',
-      post.image_url || null,
-      post.published_at || new Date().toISOString().split('T')[0]
-    ).run();
+    // published_atカラムがあればそれも含めてINSERT、なければ基本カラムのみ
+    let result;
+    try {
+      result = await env.DB.prepare(
+        'INSERT INTO posts (title, content, category, image_url, published_at) VALUES (?, ?, ?, ?, ?)'
+      ).bind(
+        post.title,
+        post.content,
+        post.category || 'info',
+        post.image_url || null,
+        post.published_at || new Date().toISOString().split('T')[0]
+      ).run();
+    } catch (e) {
+      // published_atカラムがない場合のフォールバック
+      result = await env.DB.prepare(
+        'INSERT INTO posts (title, content, category, image_url) VALUES (?, ?, ?, ?)'
+      ).bind(
+        post.title,
+        post.content,
+        post.category || 'info',
+        post.image_url || null
+      ).run();
+    }
 
     return new Response(JSON.stringify({
       success: true,
@@ -132,16 +146,30 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
       });
     }
 
-    await env.DB.prepare(
-      'UPDATE posts SET title = ?, content = ?, category = ?, image_url = ?, published_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind(
-      post.title,
-      post.content,
-      post.category || 'info',
-      post.image_url || null,
-      post.published_at || new Date().toISOString().split('T')[0],
-      post.id
-    ).run();
+    // published_atカラムがあればそれも含めてUPDATE、なければ基本カラムのみ
+    try {
+      await env.DB.prepare(
+        'UPDATE posts SET title = ?, content = ?, category = ?, image_url = ?, published_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+      ).bind(
+        post.title,
+        post.content,
+        post.category || 'info',
+        post.image_url || null,
+        post.published_at || new Date().toISOString().split('T')[0],
+        post.id
+      ).run();
+    } catch (e) {
+      // published_atカラムがない場合のフォールバック
+      await env.DB.prepare(
+        'UPDATE posts SET title = ?, content = ?, category = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+      ).bind(
+        post.title,
+        post.content,
+        post.category || 'info',
+        post.image_url || null,
+        post.id
+      ).run();
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { 'Content-Type': 'application/json' }
