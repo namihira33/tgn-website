@@ -161,10 +161,17 @@ function getCategoryClass(category: CategoryType) {
         };
       });
 
-      // 全て結合して日付順にソート、最新3件を取得
-      const allCards = [...existingNews, ...adminCards]
-        .sort((a, b) => b.date.getTime() - a.date.getTime())
-        .slice(0, 3);
+      // 全て結合して日付順にソート
+      const mergedCards = [...existingNews, ...adminCards]
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      console.log('All merged cards:', mergedCards.map(c => ({
+        date: c.date.toISOString(),
+        isAdmin: c.element.href?.includes('/admin/')
+      })));
+
+      // 最新3件を取得
+      const allCards = mergedCards.slice(0, 3);
 
       console.log('Total cards after merge:', allCards.length);
 
