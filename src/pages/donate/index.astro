@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+
+const donationOptions = [
+  {
+    amount: 100,
+    label: '100円',
+    description: 'ちょっとした応援に',
+    icon: '☕'
+  },
+  {
+    amount: 500,
+    label: '500円',
+    description: 'イベント運営費の一部に',
+    icon: '🎉'
+  },
+  {
+    amount: 1000,
+    label: '1,000円',
+    description: 'TGNの活動を大きく支援',
+    icon: '🌟'
+  }
+];
+---
+
+<BaseLayout title="寄付で応援" description="つくば院生ネットワーク（TGN）の活動を寄付で応援してください。">
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-primary/10 to-primary-light/20 py-16 md:py-24">
+    <div class="container">
+      <h1 class="text-3xl md:text-4xl font-bold text-text mb-6">
+        TGNを応援する
+      </h1>
+      <p class="text-lg text-text-muted max-w-2xl">
+        TGNは大学院生による非営利の学生団体です。<br />
+        皆様からのご寄付は、イベント運営やコミュニティ活動に活用させていただきます。
+      </p>
+    </div>
+  </section>
+
+  <!-- Donation Options -->
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        title="寄付金額を選ぶ"
+        subtitle="お好きな金額でTGNを応援してください"
+        align="center"
+      />
+
+      <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+        {donationOptions.map((option, index) => (
+          <button
+            type="button"
+            class="donation-option card p-8 text-center cursor-pointer transition-all hover:scale-105 hover:shadow-lg border-2 border-transparent hover:border-primary focus:outline-none focus:border-primary"
+            data-amount={option.amount}
+          >
+            <div class="text-4xl mb-4">{option.icon}</div>
+            <div class="text-3xl font-bold text-primary mb-2">{option.label}</div>
+            <p class="text-sm text-text-muted">{option.description}</p>
+          </button>
+        ))}
+      </div>
+
+      <div class="max-w-md mx-auto text-center">
+        <p class="text-sm text-text-muted mb-6">
+          ※ Stripeの安全な決済ページに移動します
+        </p>
+
+        <div id="selected-amount" class="hidden mb-6 p-4 bg-primary/10 rounded-lg">
+          <p class="text-lg">選択中: <span class="font-bold text-primary" id="amount-display"></span></p>
+        </div>
+
+        <button
+          id="donate-button"
+          disabled
+          class="btn btn-primary w-full py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          寄付する
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How funds are used -->
+  <section class="section bg-gray-50">
+    <div class="container">
+      <SectionHeader
+        title="寄付金の使い道"
+        subtitle="皆様からのご支援は以下の活動に活用されます"
+        align="center"
+      />
+
+      <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+          <div class="text-3xl mb-3">🎤</div>
+          <h3 class="font-bold mb-2">イベント運営費</h3>
+          <p class="text-sm text-text-muted">院生ひろば、院生の虎などの会場費・運営費</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+          <div class="text-3xl mb-3">🌸</div>
+          <h3 class="font-bold mb-2">交流イベント費</h3>
+          <p class="text-sm text-text-muted">院生花見などの交流イベント開催費用</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+          <div class="text-3xl mb-3">💻</div>
+          <h3 class="font-bold mb-2">広報・運営基盤</h3>
+          <p class="text-sm text-text-muted">ウェブサイト運営、広報活動費用</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Thank you message -->
+  <section class="section">
+    <div class="container text-center">
+      <p class="text-lg text-text-muted max-w-2xl mx-auto">
+        TGNは2011年の設立以来、大学院生のつながりを作り続けてきました。<br />
+        皆様のご支援が、次の世代の院生コミュニティを支えます。<br />
+        温かいご支援、誠にありがとうございます。
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  let selectedAmount: number | null = null;
+  let isProcessing = false;
+
+  const donationOptions = document.querySelectorAll('.donation-option');
+  const donateButton = document.getElementById('donate-button') as HTMLButtonElement;
+  const selectedAmountDiv = document.getElementById('selected-amount');
+  const amountDisplay = document.getElementById('amount-display');
+
+  donationOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      // Remove selected state from all options
+      donationOptions.forEach(opt => {
+        opt.classList.remove('border-primary', 'bg-primary/5');
+        opt.classList.add('border-transparent');
+      });
+
+      // Add selected state to clicked option
+      option.classList.remove('border-transparent');
+      option.classList.add('border-primary', 'bg-primary/5');
+
+      // Update selected amount
+      selectedAmount = parseInt(option.getAttribute('data-amount') || '0');
+
+      // Show selected amount
+      if (selectedAmountDiv && amountDisplay) {
+        selectedAmountDiv.classList.remove('hidden');
+        amountDisplay.textContent = `${selectedAmount.toLocaleString()}円`;
+      }
+
+      // Enable donate button
+      donateButton.disabled = false;
+    });
+  });
+
+  donateButton.addEventListener('click', async () => {
+    if (!selectedAmount || isProcessing) return;
+
+    isProcessing = true;
+    donateButton.disabled = true;
+    donateButton.textContent = '処理中...';
+
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: selectedAmount })
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || '決済の開始に失敗しました');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('決済の開始に失敗しました。しばらくしてから再度お試しください。');
+      donateButton.disabled = false;
+      donateButton.textContent = '寄付する';
+      isProcessing = false;
+    }
+  });
+</script>

@@ -2,52 +2,40 @@
 import Button from '../ui/Button.astro';
 ---
 
-<section class="section bg-gradient-to-br from-secondary/10 to-secondary/5">
+<section class="section bg-gradient-to-br from-primary/5 to-secondary/5">
   <div class="container">
     <div class="max-w-4xl mx-auto text-center">
       <h2 class="text-2xl md:text-3xl font-bold text-text mb-4">
-        パートナー企業・団体を募集しています
+        TGNを応援しませんか？
       </h2>
       <p class="text-text-muted mb-8 max-w-2xl mx-auto">
-        TGNでは、大学院生の異分野交流・科学コミュニケーション活動を一緒に盛り上げてくださるパートナー企業・団体を募集しています。
-        イベント協賛、研究紹介の機会提供など、様々な形でのコラボレーションが可能です。
+        TGNは院生同士の交流を10年以上続けてきた非営利の学生団体です。
+        活動に共感いただける方からのご支援をお待ちしています。
       </p>
 
-      <div class="grid md:grid-cols-3 gap-6 mb-8">
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
         <div class="bg-white rounded-xl p-6 shadow-sm">
-          <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">💝</span>
           </div>
-          <h3 class="font-bold text-text mb-2">優秀な院生へのアクセス</h3>
-          <p class="text-sm text-text-muted">多様な専門分野の大学院生との接点</p>
+          <h3 class="font-bold text-text mb-2">寄付で応援</h3>
+          <p class="text-sm text-text-muted mb-4">100円からTGNの活動を応援できます</p>
+          <Button href="/donate" variant="primary" size="sm">
+            寄付する
+          </Button>
         </div>
 
         <div class="bg-white rounded-xl p-6 shadow-sm">
           <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-            </svg>
+            <span class="text-2xl">🤝</span>
           </div>
-          <h3 class="font-bold text-text mb-2">ブランディング</h3>
-          <p class="text-sm text-text-muted">イベント・メディアでの露出機会</p>
-        </div>
-
-        <div class="bg-white rounded-xl p-6 shadow-sm">
-          <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-          <h3 class="font-bold text-text mb-2">共同企画</h3>
-          <p class="text-sm text-text-muted">オリジナルイベントの共同開催</p>
+          <h3 class="font-bold text-text mb-2">パートナーシップ</h3>
+          <p class="text-sm text-text-muted mb-4">企業・団体との協働も歓迎しています</p>
+          <Button href="/sponsor" variant="secondary" size="sm">
+            詳しく見る
+          </Button>
         </div>
       </div>
-
-      <Button href="/sponsor" variant="secondary" size="lg">
-        スポンサーシップについて詳しく見る
-      </Button>
     </div>
   </div>
 </section>

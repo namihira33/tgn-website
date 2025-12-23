@@ -1,43 +1,56 @@
-# Astro Starter Kit: Minimal
+# TGN ウェブサイト
 
-```sh
-npm create astro@latest -- --template minimal
+つくば院生ネットワーク（TGN）の公式ウェブサイトです。
+
+## TGNについて
+
+つくば院生ネットワーク（TGN）は、2011年に設立された筑波大学の大学院生による異分野交流団体です。研究室を超えたつながりを作り、大学院生に「もう一つのコミュニティ」を提供しています。
+
+### 主な活動
+
+- **院生ひろば**: 院生同士が悩みや経験を共有するグループディスカッション
+- **院生の虎**: 異分野の審査員に研究をプレゼンし、フィードバックを受ける企画
+- **院生花見**: 春の恒例・桜の下での交流イベント
+- **つくばQxQ**: 異分野研究交流イベント
+
+## 技術スタック
+
+- [Astro](https://astro.build/) - 静的サイトジェネレーター
+- [Tailwind CSS](https://tailwindcss.com/) - CSSフレームワーク
+- [Cloudflare Pages](https://pages.cloudflare.com/) - ホスティング
+
+## 開発
+
+```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバー起動
+npm run dev
+
+# ビルド
+npm run build
+
+# プレビュー
+npm run preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## ディレクトリ構成
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
+```
 /
 ├── public/
+│   └── images/         # 画像ファイル
 ├── src/
-│   └── pages/
-│       └── index.astro
+│   ├── components/     # コンポーネント
+│   ├── layouts/        # レイアウト
+│   ├── pages/          # ページ
+│   └── styles/         # スタイル
 └── package.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## リンク
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- 公式サイト: https://tgn.official.jp
+- X (Twitter): @TGN_tsukuba
+- メール: tsukuba.graduate@gmail.com

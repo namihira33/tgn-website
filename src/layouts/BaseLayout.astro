@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import QchanChat from '../components/QchanChat.astro';
 
 interface Props {
   title: string;
@@ -11,13 +12,34 @@ interface Props {
 
 const {
   title,
-  description = 'つくば院生ネットワーク（TGN）は、筑波大学の大学院生による異分野交流・科学コミュニケーション団体です。',
-  ogImage = '/og-image.jpg'
+  description = 'つくば院生ネットワーク（TGN）は、筑波大学の大学院生による異分野交流団体です。院生ひろば、院生の虎、院生花見などのイベントを通じて、研究室を超えたつながりを作っています。',
+  ogImage = '/images/ogp.jpeg'
 } = Astro.props;
 
 const siteTitle = title === 'TGN' ? 'つくば院生ネットワーク | TGN' : `${title} | TGN`;
 const siteUrl = 'https://tgn.official.jp';
 const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
+
+// 構造化データ (JSON-LD)
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "つくば院生ネットワーク（TGN）",
+  "alternateName": "TGN",
+  "url": siteUrl,
+  "logo": `${siteUrl}/images/logo.png`,
+  "description": "筑波大学の大学院生による異分野交流団体。院生ひろば、院生の虎、院生花見などのイベントを開催。",
+  "foundingDate": "2011",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "つくば市",
+    "addressRegion": "茨城県",
+    "addressCountry": "JP"
+  },
+  "sameAs": [
+    "https://twitter.com/TGN_tsukuba"
+  ]
+};
 ---
 
 <!DOCTYPE html>
@@ -26,6 +48,17 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="keywords" content="つくば院生ネットワーク,TGN,筑波大学,大学院生,異分野交流,院生ひろば,院生の虎,院生花見,つくばQxQ" />
+    <meta name="author" content="つくば院生ネットワーク（TGN）" />
+
+    <!-- Google Search Console -->
+    <meta name="google-site-verification" content="oN9rgCDf6TTSDT2GgDWzJlcZrCK9aNQD8QdsaIuDA74" />
+
+    <!-- 構造化データ -->
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={Astro.url.href} />
 
     <!-- Open Graph -->
     <meta property="og:title" content={siteTitle} />
@@ -60,6 +93,7 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`
       <slot />
     </main>
     <Footer />
+    <QchanChat />
 
     <!-- Scroll fade-in animation -->
     <script>

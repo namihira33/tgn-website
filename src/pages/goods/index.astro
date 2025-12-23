@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import Button from '../../components/ui/Button.astro';
+
+const products = [
+  {
+    name: 'TGN パーカー',
+    description: 'シンプルなTGNロゴ入りパーカー。研究室でも普段使いにも。',
+    price: '4,500円〜',
+    image: '/images/QxQ-02.png' // 仮画像
+  },
+  {
+    name: 'TGN Tシャツ',
+    description: 'TGNオリジナルデザインTシャツ。イベント参加時にも!',
+    price: '2,500円〜',
+    image: '/images/QxQ-02.png' // 仮画像
+  }
+];
+---
+
+<BaseLayout title="グッズ販売" description="TGNオリジナルグッズを販売中。パーカー、Tシャツなど。SUZURIで購入できます。">
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-primary/10 to-secondary/10 py-16 md:py-24">
+    <div class="container">
+      <h1 class="text-3xl md:text-4xl font-bold text-text mb-6">
+        TGN グッズショップ
+      </h1>
+      <p class="text-lg text-text-muted max-w-2xl">
+        TGNオリジナルグッズを販売中!<br />
+        SUZURIで購入できます。売上はTGNの活動資金として活用されます。
+      </p>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        title="商品ラインナップ"
+        subtitle="TGNオリジナルアイテム"
+        align="center"
+      />
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+        {products.map((product, index) => (
+          <div class="card overflow-hidden fade-in" style={`transition-delay: ${index * 100}ms`}>
+            <div class="aspect-square bg-gray-100 flex items-center justify-center p-8">
+              <img
+                src={product.image}
+                alt={product.name}
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div class="p-6">
+              <h3 class="font-bold text-xl mb-2">{product.name}</h3>
+              <p class="text-text-muted text-sm mb-3">{product.description}</p>
+              <p class="text-primary font-bold text-lg">{product.price}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center">
+        <p class="text-text-muted mb-6">
+          ※ 商品はSUZURIのサイトで購入できます
+        </p>
+        <Button
+          href="https://suzuri.jp"
+          variant="primary"
+          size="lg"
+          class="inline-flex items-center gap-2"
+        >
+          <span>SUZURIで購入する</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </Button>
+        <p class="text-xs text-gray-400 mt-4">
+          ※ SUZURIショップは現在準備中です
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Qちゃんグッズ -->
+  <section class="section bg-gray-50">
+    <div class="container text-center">
+      <div class="max-w-md mx-auto">
+        <img src="/images/QxQ-02.png" alt="Qちゃん" class="w-32 h-32 mx-auto mb-6 rounded-full shadow-lg" />
+        <h2 class="text-2xl font-bold text-text mb-4">Qちゃんグッズも検討中!</h2>
+        <p class="text-text-muted">
+          TGNのマスコットキャラクター「Qちゃん」のグッズも企画中です。
+          ご要望があればお気軽にお知らせください!
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

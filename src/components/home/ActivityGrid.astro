@@ -3,24 +3,22 @@ import SectionHeader from '../ui/SectionHeader.astro';
 
 const activities = [
   {
+    title: '院生花見',
+    description: '春の恒例イベント。桜の下で分野を超えた院生同士がゆるく交流。研究室を飛び出して、お花見を楽しみながら新しいつながりを作ります。',
+    image: '/images/hanami.jpeg',
+    icon: '🌸'
+  },
+  {
     title: '院生ひろば',
     description: '研究室の外で同じ大学院生として悩みや経験を共有できる場。テーマ別のグループディスカッションを通じて意味のあるつながりを作ります。',
+    image: '/images/square.jpeg',
     icon: '💬'
   },
   {
     title: '院生の虎',
     description: '自分の研究を3人の審査員にプレゼンし、異分野の視点からフィードバックを受ける企画。真剣な異分野コミュニケーションの場を創出します。',
-    icon: '🎤'
-  },
-  {
-    title: '異分野交流',
-    description: '様々な分野の学問がひとつのキャンパスに集まった筑波大学。その学際性を活かした交流イベントを開催しています。',
-    icon: '🔬'
-  },
-  {
-    title: '科学コミュニケーション',
-    description: '学問は社会に還元されるべきもの。大学内の学生・教員と一般市民の橋渡しとなる活動を行っています。',
-    icon: '🌐'
+    image: '/images/tiger.jpeg',
+    icon: '🐯'
   }
 ];
 ---
@@ -33,15 +31,26 @@ const activities = [
       align="center"
     />
 
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-6 md:grid-cols-3">
       {activities.map((activity, index) => (
         <div
-          class="card p-6 text-center fade-in"
+          class="card overflow-hidden fade-in"
           style={`transition-delay: ${index * 100}ms`}
         >
-          <div class="text-4xl mb-4">{activity.icon}</div>
-          <h3 class="font-bold text-lg mb-2">{activity.title}</h3>
-          <p class="text-sm text-text-muted">{activity.description}</p>
+          <div class="aspect-video overflow-hidden">
+            <img
+              src={activity.image}
+              alt={activity.title}
+              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-2xl">{activity.icon}</span>
+              <h3 class="font-bold text-lg">{activity.title}</h3>
+            </div>
+            <p class="text-sm text-text-muted">{activity.description}</p>
+          </div>
         </div>
       ))}
     </div>

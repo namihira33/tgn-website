@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+---
+
+<BaseLayout title="寄付完了" description="TGNへのご寄付ありがとうございます。">
+  <section class="section">
+    <div class="container">
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="text-6xl mb-6">🎉</div>
+        <h1 class="text-3xl md:text-4xl font-bold text-text mb-6">
+          ご寄付ありがとうございます！
+        </h1>
+        <p class="text-lg text-text-muted mb-8">
+          TGNへの温かいご支援、誠にありがとうございます。<br />
+          いただいたご寄付は、大学院生コミュニティの発展のために<br />
+          大切に活用させていただきます。
+        </p>
+
+        <div class="bg-primary/5 rounded-lg p-6 mb-8">
+          <p class="text-text-muted">
+            決済の確認メールがStripeから送信されます。<br />
+            領収書が必要な場合は、メールに記載のリンクからダウンロードできます。
+          </p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4">
+          <Button href="/" variant="primary" size="lg">
+            トップページへ
+          </Button>
+          <Button href="/about" variant="outline" size="lg">
+            TGNについて
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
