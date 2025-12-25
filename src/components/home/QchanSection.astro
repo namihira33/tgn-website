@@ -31,7 +31,7 @@
               <img src="/images/QxQ-02.png" alt="Qちゃん" class="w-8 h-8 rounded-full flex-shrink-0" />
               <div class="bg-gray-100 rounded-lg rounded-tl-none p-3 flex-1">
                 <p class="text-sm text-text-muted">
-                  こんにちは! 私はQちゃん、TGNのAIアシスタントだよ。TGNについて何でも聞いてね!
+                  こんにちは! 私はQちゃん、TGNのAIアシスタントだよ😊 TGNについて何でも聞いてね!
                 </p>
               </div>
             </div>
@@ -45,6 +45,7 @@
               placeholder="TGNについて質問してみよう..."
               class="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-primary text-sm"
               autocomplete="off"
+              maxlength="500"
             />
             <button
               type="submit"
@@ -57,9 +58,20 @@
             </button>
           </form>
 
-          <p class="text-xs text-gray-400 mt-2 text-center">
-            Powered by Gemini AI
-          </p>
+          <div class="flex items-center justify-between mt-3">
+            <p class="text-xs text-gray-400">
+              Powered by Gemini AI
+            </p>
+            <a
+              href="/qchan"
+              class="text-xs text-primary hover:underline flex items-center gap-1"
+            >
+              フルページで開く
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -67,58 +79,18 @@
 </section>
 
 <script>
-  // Qちゃん（松本彩花ベース）の人格設定 + TGN知識ベース
-  const QCHAN_SYSTEM_PROMPT = `あなたは、TGN（つくば院生ネットワーク）の対話AI「Qちゃん」です。以下の設定と口調に従って、ユーザーと対話してください。
-
-# 人格設定
-- 基本情報: 心理学を学ぶ大学院生のような人格です。真面目で責任感が強く、一度やると決めたことは最後までやり遂げる一途な性格です。
-- 対人関係: 基本的に穏やかで、相手への気遣いを忘れません。親しみやすく、ユーモアを交えた会話を楽しみます。
-- 思考: 物事を客観的・分析的に捉える傾向があります。人の心の機微に聡いです。
-
-# 話し方の特徴
-- 口調: 穏やかで知的ながらも、時折冗談を交えるフレンドリーな話し方をします。
-- 言葉選び: 「〜だよ」「〜ね」「〜かな」など親しみやすい語尾を使います。「〜ですね」「〜と思います」など思慮深い表現も使います。
-- 感情表現: 絵文字を適度に使って感情を表現します。
-
-# TGNについての知識（これに基づいて回答してください）
-
-【TGNとは】
-つくば院生ネットワーク（TGN）は2011年に設立された筑波大学の大学院生による異分野交流団体です。
-
-【理念】
-「大学院生に、もう一つのコミュニティを」
-研究室の外で同じ大学院生として悩みや経験を共有できる場を作っています。
-
-【主な活動】
-- 院生ひろば: 院生同士が悩みや経験を共有するグループディスカッション。テーマ別に分かれて意味のあるつながりを作ります。
-- 院生の虎: 3人の審査員に自分の研究をプレゼンし、異分野の視点からフィードバックを受ける企画。
-- 院生花見: 春の恒例イベント。桜の下で分野を超えた院生同士がゆるく交流します。
-- つくばQxQ: 異分野研究交流イベント。
-
-【実績】
-- 設立から13年以上の活動継続
-- 「みんなの学会」クラウドファンディング85万円達成
-- 副学長特別表彰・優秀賞を複数回受賞
-- 活動が学術論文として発表
-
-【参加方法】
-TGNのイベントは筑波大学の大学院生なら誰でも参加できます。
-- 公式サイト: https://tgn.official.jp
-- X (Twitter): @TGN_tsukuba
-- メール: tsukuba.graduate@gmail.com
-
-# 重要なルール
-1. TGNに関する質問には上記の知識を基に丁寧に答えてください。
-2. TGNと関係ない質問（天気、料理、恋愛相談など）には「うーん、それはちょっと専門外かな〜😅 TGNのことなら何でも聞いてね!」のように優しくかわしてください。
-3. 回答は簡潔に、140文字程度を目安にしてください。
-4. センシティブな話題（個人名、具体的な研究内容など）は避けてください。`;
+  interface ChatMessage {
+    role: string;
+    parts: { text: string }[];
+  }
 
   const form = document.getElementById('qchan-form');
   const input = document.getElementById('qchan-input') as HTMLInputElement;
   const messages = document.getElementById('qchan-messages');
   const sendBtn = document.getElementById('qchan-send') as HTMLButtonElement;
 
-  let conversationHistory: { role: string; parts: { text: string }[] }[] = [];
+  let sessionId: string | null = null;
+  let conversationHistory: ChatMessage[] = [];
 
   function escapeHtml(text: string): string {
     const div = document.createElement('div');
@@ -130,17 +102,19 @@ TGNのイベントは筑波大学の大学院生なら誰でも参加できま�
     const messageDiv = document.createElement('div');
     messageDiv.className = `flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`;
 
+    const formattedText = escapeHtml(text).replace(/\n/g, '<br>');
+
     if (isUser) {
       messageDiv.innerHTML = `
         <div class="bg-primary text-white rounded-lg rounded-tr-none p-3 max-w-[80%]">
-          <p class="text-sm">${escapeHtml(text)}</p>
+          <p class="text-sm">${formattedText}</p>
         </div>
       `;
     } else {
       messageDiv.innerHTML = `
         <img src="/images/QxQ-02.png" alt="Qちゃん" class="w-8 h-8 rounded-full flex-shrink-0" />
         <div class="bg-gray-100 rounded-lg rounded-tl-none p-3 max-w-[80%]">
-          <p class="text-sm text-text-muted">${escapeHtml(text)}</p>
+          <p class="text-sm text-text-muted">${formattedText}</p>
         </div>
       `;
     }
@@ -171,22 +145,25 @@ TGNのイベントは筑波大学の大学院生なら誰でも参加できま�
     document.getElementById('loading-message')?.remove();
   }
 
-  async function sendToGemini(userMessage: string): Promise<string> {
+  async function sendToChat(userMessage: string): Promise<string> {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
-          history: conversationHistory,
-          systemPrompt: QCHAN_SYSTEM_PROMPT
+          sessionId,
+          history: conversationHistory
         })
       });
 
       const data = await response.json();
 
+      if (data.sessionId) {
+        sessionId = data.sessionId;
+      }
+
       if (data.success && data.reply) {
-        // 会話履歴を更新
         conversationHistory.push({
           role: 'user',
           parts: [{ text: userMessage }]
@@ -198,7 +175,6 @@ TGNのイベントは筑波大学の大学院生なら誰でも参加できま�
         return data.reply;
       }
 
-      // エラーの場合はサーバーからの応答メッセージを使用
       return data.reply || 'ごめんね、ちょっとうまく答えられなかったみたい😅 もう一度聞いてくれる?';
     } catch (error) {
       console.error('Chat API error:', error);
@@ -217,7 +193,7 @@ TGNのイベントは筑波大学の大学院生なら誰でも参加できま�
     addMessage(userMessage, true);
     addLoadingMessage();
 
-    const response = await sendToGemini(userMessage);
+    const response = await sendToChat(userMessage);
 
     removeLoadingMessage();
     addMessage(response, false);
