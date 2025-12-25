@@ -1,5 +1,5 @@
 ---
-// Qちゃん対話AI - Gemini搭載チャットウィジェット
+// Qちゃん対話AI - フローティングチャットウィジェット
 ---
 
 <!-- チャットボタン -->
@@ -24,6 +24,11 @@
       <h3 class="font-bold">Qちゃん</h3>
       <p class="text-xs text-primary-light">TGNのことならおまかせ!</p>
     </div>
+    <a href="/qchan" class="p-1 hover:bg-white/20 rounded-full transition-colors" title="フルページで開く">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
+    </a>
     <button id="qchan-close" class="p-1 hover:bg-white/20 rounded-full transition-colors">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -36,7 +41,7 @@
     <div class="flex gap-2">
       <img src="/images/QxQ-02.png" alt="Qちゃん" class="w-8 h-8 rounded-full object-cover flex-shrink-0" />
       <div class="bg-white rounded-lg rounded-tl-none p-3 shadow-sm max-w-[80%]">
-        <p class="text-sm">こんにちは! 私はQちゃん、TGNのマスコットキャラクターだよ。TGNについて何でも聞いてね!</p>
+        <p class="text-sm">こんにちは! 私はQちゃん、TGNのAIアシスタントだよ😊 TGNについて何でも聞いてね!</p>
       </div>
     </div>
   </div>
@@ -50,6 +55,7 @@
         placeholder="メッセージを入力..."
         class="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-primary text-sm"
         autocomplete="off"
+        maxlength="500"
       />
       <button
         type="submit"
@@ -66,36 +72,10 @@
 </div>
 
 <script>
-  // TGNに関する知識ベース
-  const TGN_KNOWLEDGE = `
-あなたはQちゃん、つくば院生ネットワーク（TGN）のマスコットキャラクターです。
-TGNは2011年に設立された筑波大学の大学院生による異分野交流団体です。
-
-【TGNの主な活動】
-- 院生ひろば: 院生同士が悩みや経験を共有するグループディスカッション。テーマ別に分かれて意味のあるつながりを作ります。
-- 院生の虎: 3人の審査員に自分の研究をプレゼンし、異分野の視点からフィードバックを受ける企画。
-- 院生花見: 春の恒例イベント。桜の下で分野を超えた院生同士がゆるく交流します。
-- つくばQxQ: 異分野研究交流イベント。
-
-【TGNの理念】
-「大学院生に、もう一つのコミュニティを」
-研究室の外で同じ大学院生として悩みや経験を共有できる場を作っています。
-
-【実績】
-- 設立から13年以上の活動継続
-- 「みんなの学会」クラウドファンディング85万円達成
-- 副学長特別表彰・優秀賞を複数回受賞
-- 活動が学術論文として発表
-
-【参加方法】
-TGNのイベントは筑波大学の大学院生なら誰でも参加できます。
-公式サイト: https://tgn.official.jp
-X (Twitter): @TGN_tsukuba
-メール: tsukuba.graduate@gmail.com
-
-親しみやすく、フレンドリーな口調で回答してください。語尾に「〜だよ」「〜ね」などを使ってください。
-質問に関連する情報を簡潔に答えてください。分からないことは正直に「ごめんね、それは分からないや」と答えてください。
-`;
+  interface ChatMessage {
+    role: string;
+    parts: { text: string }[];
+  }
 
   const toggle = document.getElementById('qchan-toggle');
   const chat = document.getElementById('qchan-chat');
@@ -106,7 +86,8 @@ X (Twitter): @TGN_tsukuba
   const sendBtn = document.getElementById('qchan-send') as HTMLButtonElement;
 
   let isOpen = false;
-  let conversationHistory: { role: string; parts: { text: string }[] }[] = [];
+  let sessionId: string | null = null;
+  let conversationHistory: ChatMessage[] = [];
 
   toggle?.addEventListener('click', () => {
     isOpen = !isOpen;
@@ -121,21 +102,29 @@ X (Twitter): @TGN_tsukuba
     chat?.classList.remove('flex');
   });
 
+  function escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   function addMessage(text: string, isUser: boolean) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `flex gap-2 ${isUser ? 'flex-row-reverse' : ''}`;
 
+    const formattedText = escapeHtml(text).replace(/\n/g, '<br>');
+
     if (isUser) {
       messageDiv.innerHTML = `
         <div class="bg-primary text-white rounded-lg rounded-tr-none p-3 shadow-sm max-w-[80%]">
-          <p class="text-sm">${text}</p>
+          <p class="text-sm">${formattedText}</p>
         </div>
       `;
     } else {
       messageDiv.innerHTML = `
         <img src="/images/QxQ-02.png" alt="Qちゃん" class="w-8 h-8 rounded-full object-cover flex-shrink-0" />
         <div class="bg-white rounded-lg rounded-tl-none p-3 shadow-sm max-w-[80%]">
-          <p class="text-sm">${text}</p>
+          <p class="text-sm">${formattedText}</p>
         </div>
       `;
     }
@@ -166,22 +155,25 @@ X (Twitter): @TGN_tsukuba
     document.getElementById('loading-message')?.remove();
   }
 
-  async function sendToGemini(userMessage: string): Promise<string> {
+  async function sendToChat(userMessage: string): Promise<string> {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
-          history: conversationHistory,
-          systemPrompt: TGN_KNOWLEDGE
+          sessionId,
+          history: conversationHistory
         })
       });
 
       const data = await response.json();
 
+      if (data.sessionId) {
+        sessionId = data.sessionId;
+      }
+
       if (data.success && data.reply) {
-        // 会話履歴を更新
         conversationHistory.push({
           role: 'user',
           parts: [{ text: userMessage }]
@@ -193,11 +185,10 @@ X (Twitter): @TGN_tsukuba
         return data.reply;
       }
 
-      // エラーの場合はサーバーからの応答メッセージを使用
-      return data.reply || 'ちょっとうまく答えられなかったみたい。もう一度聞いてくれる?';
+      return data.reply || 'ちょっとうまく答えられなかったみたい😅 もう一度聞いてくれる?';
     } catch (error) {
       console.error('Chat API error:', error);
-      return 'ネットワークエラーが起きちゃった。しばらくしてからもう一度試してね!';
+      return 'ネットワークエラーが起きちゃった😢 しばらくしてからもう一度試してね!';
     }
   }
 
@@ -212,7 +203,7 @@ X (Twitter): @TGN_tsukuba
     addMessage(userMessage, true);
     addLoadingMessage();
 
-    const response = await sendToGemini(userMessage);
+    const response = await sendToChat(userMessage);
 
     removeLoadingMessage();
     addMessage(response, false);
