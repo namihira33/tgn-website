@@ -172,67 +172,36 @@ TGNのイベントは筑波大学の大学院生なら誰でも参加できま�
   }
 
   async function sendToGemini(userMessage: string): Promise<string> {
-    const API_KEY = 'AIzaSyCYZhVCvuNRuozns0U_ff9d6QiIo2hpeps';
-
-    conversationHistory.push({
-      role: 'user',
-      parts: [{ text: userMessage }]
-    });
-
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: {
-              parts: [{ text: QCHAN_SYSTEM_PROMPT }]
-            },
-            contents: conversationHistory,
-            generationConfig: {
-              temperature: 0.8,
-              maxOutputTokens: 300
-            },
-            safetySettings: [
-              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
-              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
-              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
-              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
-            ]
-          })
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Response Error:', response.status, errorText);
-        throw new Error(`API Error: ${response.status}`);
-      }
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          history: conversationHistory,
+          systemPrompt: QCHAN_SYSTEM_PROMPT
+        })
+      });
 
       const data = await response.json();
-      console.log('Gemini Response:', data);
 
-      if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        const aiResponse = data.candidates[0].content.parts[0].text;
+      if (data.success && data.reply) {
+        // 会話履歴を更新
+        conversationHistory.push({
+          role: 'user',
+          parts: [{ text: userMessage }]
+        });
         conversationHistory.push({
           role: 'model',
-          parts: [{ text: aiResponse }]
+          parts: [{ text: data.reply }]
         });
-        return aiResponse;
+        return data.reply;
       }
 
-      // エラーの詳細をログに出力
-      if (data.error) {
-        console.error('Gemini API Error:', data.error);
-      }
-      if (data.promptFeedback) {
-        console.error('Prompt Feedback:', data.promptFeedback);
-      }
-
-      return 'ごめんね、ちょっとうまく答えられなかったみたい😅 もう一度聞いてくれる?';
+      // エラーの場合はサーバーからの応答メッセージを使用
+      return data.reply || 'ごめんね、ちょっとうまく答えられなかったみたい😅 もう一度聞いてくれる?';
     } catch (error) {
-      console.error('Gemini API error:', error);
+      console.error('Chat API error:', error);
       return 'ネットワークエラーが起きちゃった😢 しばらくしてからもう一度試してね!';
     }
   }
